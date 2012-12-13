@@ -56,6 +56,7 @@
     if ($item['eventtype']==1) echo "<"; 
     if ($item['eventtype']==2) echo "==";
     if ($item['eventtype']==3) echo "inactive";
+    if ($item['eventtype']==4) echo "updated";
     ?></td>
     <td><?php if ($item['eventtype']!=3) echo $item['eventvalue']; ?></td>
     <td>
@@ -76,15 +77,20 @@
     }
     ?>
     </td>
+    
     <td>
     <?php 
     if ($item['action']==0) echo "send email"; 
     if ($item['action']==1) echo "set feed"; 
+    if ($item['action']==2) echo "call url"; 
     ?></td>
 
     <td><?php if ($item['action']==1) echo get_feed_field($item['setfeed'],'name'); ?></td>
     <td><i><?php if ($item['action']==1) echo "="; ?></i></td>
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
+
+    <td><?php if ($item['action']==2) echo $item['setcurl']; ?></td>
+    
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
   </tr>
   <?php } ?>
@@ -110,6 +116,7 @@
       <option value="1" >less than</option>
       <option value="2" >equal to</option>
       <option value="3" >inactive</option>
+      <option value="4" >is updated</option>
       </select>
       
       <span id="not-inactive">
@@ -121,6 +128,7 @@
       <select id="action" name="action" style="width:100px; margin:0px;">
       <option value="0" >send email</option>
       <option value="1" >set feed</option>
+      <option value="2" >call url</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -135,6 +143,12 @@
 
       <input name="setvalue" type="text" style="width:60px; margin:0px;" />
 
+
+      </span>
+
+      <span id="not-curl" style="display:none">
+
+      <input name="setcurl" type="text" style="width:180px; margin:0px;" />
 
       </span>
  
@@ -163,8 +177,9 @@
   });
 
   $("#action").click(function() {
-    if ($(this).val() == 1) $("#not-email").show();
-    if ($(this).val() == 0) $("#not-email").hide();
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); }
+    if ($(this).val() == 1) { $("#not-email").show(); $("#not-curl").hide(); }
+    if ($(this).val() == 0) { $("#not-email").hide(); $("#not-curl").hide(); }
   });
 </script>
 

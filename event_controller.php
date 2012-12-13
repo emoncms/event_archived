@@ -26,8 +26,6 @@
 
     $userid = $session['userid'];
 
-
-
     if ($action == 'add' && $session['write'])
     {
       $eventfeed = intval(get('eventfeed'));
@@ -36,8 +34,9 @@
       $action = intval(get('action'));
       $setfeed = intval(get('setfeed'));
       $setvalue = floatval(get('setvalue'));
+      $setcurl = get('setcurl');
 
-      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue);
+      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$setcurl);
       $output['message'] = "Event added";
     }
 
@@ -87,6 +86,14 @@
               set_feed_field($event['setfeed'],'value',$event['setvalue']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
+            
+            if ($event['action']==2)
+            {
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
+              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
+            }
+
             // echo "<br>";
           }
         }
@@ -111,6 +118,14 @@
               set_feed_field($event['setfeed'],'value',$event['setvalue']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
+
+            if ($event['action']==2)
+            {
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
+              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
+            }
+
             // echo "<br>";
           }
         }
@@ -135,6 +150,14 @@
               set_feed_field($event['setfeed'],'value',$event['setvalue']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
+
+            if ($event['action']==2)
+            {
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
+              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
+            }
+
             // echo "<br>";
           }
         }
@@ -159,6 +182,15 @@
               set_feed_field($event['setfeed'],'value',$event['setvalue']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
+
+            if ($event['action']==2)
+            {
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
+              set_feed_field($event['setfeed'],'value',$event['setvalue']);
+              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
+            }
+
+
             // echo "<br>";
           }
         }
@@ -169,5 +201,3 @@
 
     return $output;
   }
-
-?>

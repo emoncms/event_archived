@@ -9,7 +9,7 @@ $schema['event'] = array(
   'action' => array('type' => 'int(11)'),
   'setfeed' => array('type' => 'int(11)'),
   'setvalue' => array('type' => 'float'),
+  'setcurl' => array('type' => 'text'),
   'lasttime' => array('type' => 'int(11)')
 );
 
-?>
