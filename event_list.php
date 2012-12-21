@@ -89,7 +89,7 @@
     <td><i><?php if ($item['action']==1) echo "="; ?></i></td>
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
-    <td><?php if ($item['action']==2) echo $item['setcurl']; ?></td>
+    <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
     
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
   </tr>
@@ -148,7 +148,7 @@
 
       <span id="not-curl" style="display:none">
 
-      <input name="setcurl" type="text" style="width:180px; margin:0px;" />
+      <input name="callcurl" type="text" style="width:180px; margin:0px;" />
 
       </span>
  

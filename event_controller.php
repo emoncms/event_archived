@@ -34,9 +34,9 @@
       $action = intval(get('action'));
       $setfeed = intval(get('setfeed'));
       $setvalue = floatval(get('setvalue'));
-      $setcurl = get('setcurl');
+      $callcurl = get('callcurl');
 
-      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$setcurl);
+      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl);
       $output['message'] = "Event added";
     }
 
@@ -89,8 +89,8 @@
             
             if ($event['action']==2)
             {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
-              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
+              set_feed_field($event['callcurl'],'value',$event['callcurl']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
 
@@ -121,8 +121,8 @@
 
             if ($event['action']==2)
             {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
-              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
+              set_feed_field($event['callcurl'],'value',$event['callcurl']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
 
@@ -153,8 +153,8 @@
 
             if ($event['action']==2)
             {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setcurl'];
-              set_feed_field($event['setcurl'],'value',$event['setcurl']);
+              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
+              set_feed_field($event['callcurl'],'value',$event['callcurl']);
               set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
             }
 
