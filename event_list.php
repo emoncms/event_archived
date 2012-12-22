@@ -173,13 +173,17 @@
   });
 
   $("#eventtype").click(function() {
-    if ($(this).val() == 3) $("#not-inactive").hide(); else $("#not-inactive").show();
+    if ($(this).val() == 0) $("#not-inactive").show();
+    if ($(this).val() == 1) $("#not-inactive").show();
+    if ($(this).val() == 2) $("#not-inactive").show();
+    if ($(this).val() == 3) $("#not-inactive").hide();
+    if ($(this).val() == 4) $("#not-inactive").hide();
   });
 
   $("#action").click(function() {
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); }
-    if ($(this).val() == 1) { $("#not-email").show(); $("#not-curl").hide(); }
     if ($(this).val() == 0) { $("#not-email").hide(); $("#not-curl").hide(); }
+    if ($(this).val() == 1) { $("#not-email").show(); $("#not-curl").hide(); }
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); }
   });
 </script>
 
