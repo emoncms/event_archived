@@ -10,6 +10,7 @@ $schema['event'] = array(
   'setfeed' => array('type' => 'int(11)'),
   'setvalue' => array('type' => 'float'),
   'callcurl' => array('type' => 'text'),
-  'lasttime' => array('type' => 'int(11)')
+  'lasttime' => array('type' => 'int(11)'),
+  'mutetime' => array('type' => 'int(11)')
 );
 
