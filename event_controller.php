@@ -37,7 +37,7 @@
       $callcurl = get('callcurl');
       $mutetime = get('mutetime');
 
-      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$mutetime);
+      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime);
       $output['message'] = "Event added";
     }
 

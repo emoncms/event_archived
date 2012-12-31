@@ -86,6 +86,8 @@
     if ($item['action']==0) echo "send email"; 
     if ($item['action']==1) echo "set feed"; 
     if ($item['action']==2) echo "call url"; 
+    if ($item['action']==3) echo "send tweet"; 
+    if ($item['action']==4) echo "send prowl"; 
     ?></td>
 
     <td><?php if ($item['action']==1) echo get_feed_field($item['setfeed'],'name'); ?></td>
@@ -132,6 +134,8 @@
           <option value="0" >send email</option>
           <option value="1" >set feed</option>
           <option value="2" >call url</option>
+          <option value="3" >tweet</option>
+          <option value="4" >send prowl</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -148,6 +152,10 @@
 
       <span id="not-value" style="font-weight:bold;" >to
           <input name="setvalue" type="text" style="width:60px; margin:0px;" />
+      </span>
+
+      <span id="not-message" style="font-weight:bold;" >to
+          <input name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
       <span id="not-curl" style="display:none">
@@ -195,9 +203,11 @@
   });
 
   $("#action").click(function() {
-    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide();}
-    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show();}
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide();}
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show();}
   });
 </script>
 
