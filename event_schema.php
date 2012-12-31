@@ -11,6 +11,7 @@ $schema['event'] = array(
   'setvalue' => array('type' => 'float'),
   'callcurl' => array('type' => 'text'),
   'lasttime' => array('type' => 'int(11)'),
-  'mutetime' => array('type' => 'int(11)')
+  'mutetime' => array('type' => 'int(11)'),
+  'message' => array('type' => 'text')
 );
 
