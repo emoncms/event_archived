@@ -154,7 +154,7 @@
           <input name="setvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
-      <span id="not-message" style="font-weight:bold;" >to
+      <span id="not-message" style="font-weight:bold;" > message
           <input name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
