@@ -65,10 +65,8 @@ function get_user_prowl($userid) {
 
 function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
-    global $session, $route;
-
-    $apikey_write = get_apikey_write($session['userid']);
-    $apikey_read = get_apikey_read($session['userid']);
+    global $session;
+    $userid = $session['userid'];
     
     $result = db_query("SELECT * FROM event WHERE eventfeed = $feedid");
 
@@ -77,16 +75,6 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
         if ($row['lasttime']+$row['mutetime'] > time() ) {
             return 0;    
         }
-
-        if (isset($session['userid'])) {
-            $userid = $session['userid'];
-        } else {
-            $apiResult = db_query("SELECT id FROM users WHERE apikey_write = '".$apikey_write."' or apikey_read = '".$apikey_read."'");
-            $apiRow = db_fetch_array($apiResult);
-            $userid=$apiRow['id'];
-            //$userid=1 // this works .. sends my events crazy (n a good way!)!!
-            // It needs the userid one way or another as it doesn't have the session userid
-            }
         
         $sendAlert = 0;
         switch($row['eventtype']) {
