@@ -36,9 +36,10 @@
       $setvalue = floatval(get('setvalue'));
       $callcurl = get('callcurl');
       $mutetime = get('mutetime');
+      $priority = get('priority');
       $message = "Test Msg NJB";
 
-      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime);
+      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
       $output['message'] = "Event added";
     }
 

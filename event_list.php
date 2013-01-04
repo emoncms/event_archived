@@ -158,6 +158,17 @@
           <input name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
+      <span id="not-prowl" style="font-weight:bold;" > priority
+          <select id="action" name="priority" style="width:100px; margin:0px;">
+              <option value="-2">Very Low</option>
+              <option value="-1">Moderate</option>
+              <option value="0">Normal</option>
+              <option value="1">High</option>
+              <option value="2">Emergency</option>
+          </select>
+      </span>
+
+
       <span id="not-curl" style="display:none">
           <input name="callcurl" type="text" style="width:180px; margin:0px;" />
       </span>
@@ -203,11 +214,11 @@
   });
 
   $("#action").click(function() {
-    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show();}
-    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide();}
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide();}
-    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show();}
-    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show();}
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-prowl").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-prowl").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").show();}
   });
 </script>
 
