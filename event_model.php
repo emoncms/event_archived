@@ -45,6 +45,24 @@ function event_list($userid)
   return $list;
 }
 
+function get_user_smtp($userid) {
+  $result = db_query("SELECT smtpserver, smtpuser, smtppassword, smtpport  FROM users WHERE `id` = '$userid'");
+  $row = db_fetch_array($result);
+  return $row;  
+}
+
+function get_user_twitter($userid) {
+  $result = db_query("SELECT consumerkey, consumersecret, usertoken, usersecret FROM users WHERE `id` = '$userid'");
+  $row = db_fetch_array($result);
+  return $row;  
+}
+
+function get_user_prowl($userid) {
+  $result = db_query("SELECT prowlkey FROM users WHERE `id` = '$userid'");
+  $row = db_fetch_array($result);
+  return $row;  
+}
+
 function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
     global $session, $route;
@@ -56,6 +74,14 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
         if ($row['lasttime']+$row['mutetime'] > time() ) {
             return 0;    
         }
+
+        if (isset($session['userid'])) {
+            $userid = $session['userid'];
+        } else {
+            $apiResult = db_query("SELECT id FROM users WHERE apikey_write = '".$_GET['apikey']."' or apikey_read = '".$_GET['apikey']."'");
+            $apiRow = db_fetch_array($apiResult);
+            $userid=$apiRow['id'];
+            }
         
         $sendAlert = 0;
         switch($row['eventtype']) {
@@ -110,6 +136,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 case 0:
                     // email
                     require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.phpmailer.php');
+                    $smtp = get_user_smtp($userid);
 
                     $mail             = new PHPMailer();
                     
@@ -124,12 +151,12 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     $mail->SMTPAuth   = true;                  // enable SMTP authentication
                     $mail->SMTPSecure = "ssl";                 // sets the prefix to the servier
 
-                    $mail->Host       = $session['smtpserver'];     // sets GMAIL as the SMTP server
-                    $mail->Port       = $session['smtpport'];       // set the SMTP port for the GMAIL server
-                    $mail->Username   = $session['smtpuser'];       // GMAIL username
-                    $mail->Password   = $session['smtppassword'];   // GMAIL password
+                    $mail->Host       = $smtp['smtpserver'];     // sets GMAIL as the SMTP server
+                    $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
+                    $mail->Username   = $smtp['smtpuser'];       // GMAIL username
+                    $mail->Password   = $smtp['smtppassword'];   // GMAIL password
                     
-                    $mail->SetFrom($session['smtpuser'], 'emoncms');
+                    $mail->SetFrom($smtp['smtpuser'], 'emoncms');
                     
                     //$mail->AddReplyTo("user2@gmail.com', 'First Last");
                     
@@ -139,7 +166,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     
                     $mail->MsgHTML($body);
                     
-                    $address = $session['smtpuser'];
+                    $address = $smtp['smtpuser'];
                     $mail->AddAddress($address, "emoncms");
                     
                     //$mail->AddAttachment("images/phpmailer.gif");      // attachment
@@ -172,6 +199,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 case 3:
                     // Twitter
                     require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/oAuth/tmhOAuth.php');
+                    $twitter = get_user_twitter($userid);
                       
                     // Set the authorization values
                     // In keeping with the OAuth tradition of maximum confusion, 
@@ -181,10 +209,10 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     // The values here have asterisks to hide the true contents 
                     // You need to use the actual values from Twitter
                     $writeconnection = new tmhOAuth(array(
-                        'consumer_key' => $session['consumerkey'],
-                        'consumer_secret' => $session['consumersecret'],
-                        'user_token' => $session['usertoken'],
-                        'user_secret' => $session['usersecret'],
+                        'consumer_key' => $twitter['consumerkey'],
+                        'consumer_secret' => $twitter['consumersecret'],
+                        'user_token' => $twitter['usertoken'],
+                        'user_secret' => $twitter['usersecret'],
                     )); 
                     
                     $body = str_replace('{value}', $value, $row['message']);
@@ -205,6 +233,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlConnector.class.php';
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlMessage.class.php';
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlResponse.class.php';
+                    $prowl = get_user_prowl($userid);
 
                     $oProwl = new ProwlConnector();
                     $oMsg 	= new ProwlMessage();
@@ -212,7 +241,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 	$oProwl->setIsPostRequest(true);
                 	$oMsg->setPriority($row['priority']);
                 	
-                	$oMsg->addApiKey($session['prowlkey']);
+                	$oMsg->addApiKey($prowl['prowlkey']);
                 
                 	$oMsg->setEvent('emoncms event');
                 	

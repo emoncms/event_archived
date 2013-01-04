@@ -37,36 +37,35 @@
       $callcurl = get('callcurl');
       $mutetime = get('mutetime');
       $priority = get('priority');
-      $message = "Test Msg NJB";
-
-      event_add($session['userid'],$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $message = get('message');
+      
+      event_add($eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
       $output['message'] = "Event added";
     }
 
     else if ($action == 'delete' && $session['write'])
     {
       $id = intval(get('id'));
-      event_delete($session['userid'],$id);
+      event_delete($userid,$id);
       $output['message'] = "Event deleted";
     }
 
     else if ($session['write'])
     {
-      $event_list = event_list($session['userid']);
-      $feeds = get_user_feed_names($session['userid']);
+      $event_list = event_list($userid);
+      $feeds = get_user_feed_names($userid);
       $output['content'] = view("event/event_list.php", array('event_list'=>$event_list, 'feeds'=>$feeds));
     }
 
     if ($action == 'run' && $session['write'])
     {
-      $event_list = event_list($session['userid']);
+      $event_list = event_list($userid);
 
       foreach ($event_list as $event)
       {
         $time = strtotime(get_feed_field($event['eventfeed'],'time'));        
         $value = get_feed_field($event['eventfeed'],'value');
         $name = get_feed_field($event['eventfeed'],'name');
-
 
         // More than
         if ($event['eventtype']==0)
@@ -78,7 +77,7 @@
             // Sending email
             if ($event['action']==0)
             {
-              event_set_lasttime($session['userid'],$event['id'],time());
+              event_set_lasttime($userid,$event['id'],time());
               if ((time()-$event['lasttime'])>120) echo "sending email";
             }
 
@@ -111,7 +110,7 @@
             // Sending email
             if ($event['action']==0)
             {
-              event_set_lasttime($session['userid'],$event['id'],time());
+              event_set_lasttime($userid,$event['id'],time());
               if ((time()-$event['lasttime'])>120) echo "sending email";
             }
 
@@ -143,7 +142,7 @@
             // Sending email
             if ($event['action']==0)
             {
-              event_set_lasttime($session['userid'],$event['id'],time());
+              event_set_lasttime($$userid,$event['id'],time());
               if ((time()-$event['lasttime'])>120) echo "sending email";
             }
 
@@ -175,7 +174,7 @@
             // Sending email
             if ($event['action']==0)
             {
-              event_set_lasttime($session['userid'],$event['id'],time());
+              event_set_lasttime($$userid,$event['id'],time());
               if ((time()-$event['lasttime'])>120) echo "sending email";
             }
 
