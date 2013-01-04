@@ -12,7 +12,7 @@ $schema['event'] = array(
   'callcurl' => array('type' => 'text'),
   'lasttime' => array('type' => 'int(11)'),
   'mutetime' => array('type' => 'int(11)'),
-  'priority' => array('type' => 'int(11)'),
+  'priority' => array('type' => 'int(3)', 'default'=>0),
   'message' => array('type' => 'text')
 );
 

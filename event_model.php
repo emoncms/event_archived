@@ -81,6 +81,8 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
             $apiResult = db_query("SELECT id FROM users WHERE apikey_write = '".$_GET['apikey']."' or apikey_read = '".$_GET['apikey']."'");
             $apiRow = db_fetch_array($apiResult);
             $userid=$apiRow['id'];
+            //$userid=1 // this works .. sends my events crazy (n a good way!)!!
+            // It needs the userid one way or another as it doesn't have the session userid
             }
         
         $sendAlert = 0;
@@ -234,6 +236,8 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlMessage.class.php';
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlResponse.class.php';
                     $prowl = get_user_prowl($userid);
+                    echo $userid;
+                    print_r($prowl);
 
                     $oProwl = new ProwlConnector();
                     $oMsg 	= new ProwlMessage();
