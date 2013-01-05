@@ -261,14 +261,10 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     break;                      
                 case 4:
                     // Prowl
-                    // Figure out later ...
-
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlConnector.class.php';
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlMessage.class.php';
                     require_once realpath(dirname(__FILE__)).'/../event/scripts/prowlphp/ProwlResponse.class.php';
                     $prowl = get_user_prowl($userid);
-                    echo $userid;
-                    print_r($prowl);
 
                     $oProwl = new ProwlConnector();
                     $oMsg 	= new ProwlMessage();
