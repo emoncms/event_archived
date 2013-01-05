@@ -67,7 +67,6 @@
       $prowlkey = post('prowlkey');
 
       $smtpserver = post('smtpserver');
-      $message = post('message');
       $smtpuser = post('smtpuser');
       $smtppassword = post('smtppassword');
       $smtpport = preg_replace('/[^\w\s-]/','',post('smtpport'));
@@ -77,7 +76,7 @@
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
 
-      set_event_settings($session['userid'],$prowlkey,$message,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
+      set_event_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
 
       // Reload the page	  	
       if ($format == 'html')

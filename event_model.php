@@ -47,7 +47,7 @@ function event_list($userid)
 
 
 // Set all event settings in one save
-function set_event_settings($userid,$prowlkey,$message,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport) 
+function set_event_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport) 
 {
   $result = db_query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
   $row = db_fetch_array($result);
@@ -58,7 +58,7 @@ function set_event_settings($userid,$prowlkey,$message,$consumerkey,$consumersec
   }
   else
   {
-    db_query("UPDATE event_settings SET prowlkey = '$prowlkey', message = '$message', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
+    db_query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
   }
 } 
 
