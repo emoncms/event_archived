@@ -18,6 +18,7 @@
 <?php global $path; ?>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
 
+<div style="float:right;"><a href="<?php echo $path; ?>event/settings">Event Settings</a></div>
 <h2>Event</h2>
 
 <p>Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.</p>
@@ -44,6 +45,7 @@
     <th></th>
     <th></th>
     <th></th>
+    <th></th>
   </tr>
   <?php $i=0; foreach ($event_list as $item) { $i++; ?>
   <tr class="d<?php echo ($i & 1); ?>" >
@@ -56,6 +58,7 @@
     if ($item['eventtype']==1) echo "<"; 
     if ($item['eventtype']==2) echo "==";
     if ($item['eventtype']==3) echo "inactive";
+    if ($item['eventtype']==4) echo "updated";
     ?></td>
     <td><?php if ($item['eventtype']!=3) echo $item['eventvalue']; ?></td>
     <td>
@@ -65,6 +68,8 @@
     if ($item['eventtype']==1 && (get_feed_field($item['eventfeed'],'value')<$item['eventvalue'])) $state = true;
     if ($item['eventtype']==2 && (get_feed_field($item['eventfeed'],'value')==$item['eventvalue'])) $state = true;
     if ($item['eventtype']==3 && (((time()-strtotime(get_feed_field($item['eventfeed'],'time')))/3600)>24)) $state = true;
+    // Perhaps a n/a state?
+    //if ($item['eventtype']==4) $state = false;
     if ($state == true) echo '<span class="label label-success" >TRUE</span>'; else echo '<span class="label label-important" >FALSE</span>';
     ?>
     </td>
@@ -76,15 +81,22 @@
     }
     ?>
     </td>
+    
     <td>
     <?php 
     if ($item['action']==0) echo "send email"; 
     if ($item['action']==1) echo "set feed"; 
+    if ($item['action']==2) echo "call url"; 
+    if ($item['action']==3) echo "send tweet"; 
+    if ($item['action']==4) echo "send prowl"; 
     ?></td>
 
     <td><?php if ($item['action']==1) echo get_feed_field($item['setfeed'],'name'); ?></td>
     <td><i><?php if ($item['action']==1) echo "="; ?></i></td>
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
+
+    <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
+    
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
   </tr>
   <?php } ?>
@@ -106,37 +118,73 @@
       </select>
       <span style="font-weight:bold;" >is</span> 
       <select id="eventtype" name="eventtype" style="width:100px; margin:0px;">
-      <option value="0" >more than</option>
-      <option value="1" >less than</option>
-      <option value="2" >equal to</option>
-      <option value="3" >inactive</option>
+          <option value="0" >more than</option>
+          <option value="1" >less than</option>
+          <option value="2" >equal to</option>
+          <option value="3" >inactive</option>
+          <option value="4" >is updated</option>
       </select>
       
       <span id="not-inactive">
-      <input name="eventvalue" type="text" style="width:60px; margin:0px;" />
+          <input name="eventvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
       <span style="font-weight:bold;" >: </span> 
 
       <select id="action" name="action" style="width:100px; margin:0px;">
-      <option value="0" >send email</option>
-      <option value="1" >set feed</option>
+          <option value="0" >send email</option>
+          <option value="1" >set feed</option>
+          <option value="2" >call url</option>
+          <option value="3" >tweet</option>
+          <option value="4" >send prowl</option>
       </select>
 
       <span id="not-email" style="display:none">
-
-      <select name="setfeed" style="width:160px; margin:0px;">
-      <?php foreach ($feeds as $feed){ ?>
-      <option value="<?php echo $feed['id']; ?>"><?php echo $feed['name']; ?></option>
-      <?php } ?>
-      </select>
-
-      <span style="font-weight:bold;" >to</span> 
-
-      <input name="setvalue" type="text" style="width:60px; margin:0px;" />
-
-
+          <input name="setemail" type="text" style="width:180px; margin:0px;" />
       </span>
+
+      <span id="not-feed" style="display:none">
+          <select name="setfeed" style="width:160px; margin:0px;">
+              <?php foreach ($feeds as $feed){ ?>
+                  <option value="<?php echo $feed['id']; ?>"><?php echo $feed['name']; ?></option>
+              <?php } ?>
+          </select>
+      </span>
+
+      <span id="not-value" style="font-weight:bold;" >to
+          <input name="setvalue" type="text" style="width:60px; margin:0px;" />
+      </span>
+
+      <span id="not-message" style="font-weight:bold;" > message
+          <input name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
+      </span>
+
+      <span id="not-prowl" style="font-weight:bold;" > priority
+          <select id="action" name="priority" style="width:100px; margin:0px;">
+              <option value="-2">Very Low</option>
+              <option value="-1">Moderate</option>
+              <option value="0">Normal</option>
+              <option value="1">High</option>
+              <option value="2">Emergency</option>
+          </select>
+      </span>
+
+
+      <span id="not-curl" style="display:none">
+          <input name="callcurl" type="text" style="width:180px; margin:0px;" />
+      </span>
+
+      <select id="action" name="mutetime" style="width:100px; margin:0px;">
+          <option value="0">No mute</option>
+          <option value="60">1 min</option>
+          <option value="600">10 min</option>
+          <option value="1800">30 min</option>
+          <option value="3600">1 hr</option>
+          <option value="14400">3 hr</option>
+          <option value="28800">6 hr</option>
+          <option value="57600">12 hr</option>
+          <option value="86400">24 hr</option>
+      </select>
  
       <div id="addevent" class="btn btn-info" >Add</div>
       </div>
@@ -159,12 +207,19 @@
   });
 
   $("#eventtype").click(function() {
-    if ($(this).val() == 3) $("#not-inactive").hide(); else $("#not-inactive").show();
+    if ($(this).val() == 0) $("#not-inactive").show();
+    if ($(this).val() == 1) $("#not-inactive").show();
+    if ($(this).val() == 2) $("#not-inactive").show();
+    if ($(this).val() == 3) $("#not-inactive").hide();
+    if ($(this).val() == 4) $("#not-inactive").hide();
   });
 
   $("#action").click(function() {
-    if ($(this).val() == 1) $("#not-email").show();
-    if ($(this).val() == 0) $("#not-email").hide();
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-prowl").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-prowl").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").show();}
   });
 </script>
 
