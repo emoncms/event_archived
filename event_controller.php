@@ -39,7 +39,7 @@
       $priority = get('priority');
       $message = get('message');
       
-      event_add($eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
+      event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
       $output['message'] = "Event added";
     }
 
