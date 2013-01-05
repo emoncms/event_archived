@@ -18,6 +18,7 @@
 <?php global $path; ?>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
 
+<div style="float:right;"><a href="<?php echo $path; ?>event/settings">Event Settings</a></div>
 <h2>Event</h2>
 
 <p>Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.</p>

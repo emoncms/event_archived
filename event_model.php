@@ -45,20 +45,60 @@ function event_list($userid)
   return $list;
 }
 
+
+// Set all event settings in one save
+function set_event_settings($userid,$prowlkey,$message,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport) 
+{
+  $result = db_query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
+  $row = db_fetch_array($result);
+
+  if (!$row) 
+  {
+    db_query("INSERT INTO event_settings (`userid`) VALUES ('$userid')");
+  }
+  else
+  {
+    db_query("UPDATE event_settings SET prowlkey = '$prowlkey', message = '$message', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
+  }
+} 
+
+/*
+function set_user_prowlkey($userid, $prowlkey, $message)
+{
+  db_query("UPDATE event_settings SET prowlkey = '$prowlkey', message = '$message' WHERE userid='$userid'");
+}
+
+function set_user_twitter($userid, $consumerkey,$consumersecret,$usertoken,$usersecret)
+{
+  db_query("UPDATE event_settings SET consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret' WHERE userid='$userid'");
+}
+
+function set_user_smtp($userid, $smtpserver, $smtpuser, $smtppassword, $smtpport)
+{
+  db_query("UPDATE event_settings SET smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
+}
+*/
+
+function get_event_settings($userid) {
+  $result = db_query("SELECT *  FROM event_settings WHERE `userid` = '$userid'");
+  $row = db_fetch_array($result);
+  return $row;  
+}
+
 function get_user_smtp($userid) {
-  $result = db_query("SELECT smtpserver, smtpuser, smtppassword, smtpport  FROM users WHERE `id` = '$userid'");
+  $result = db_query("SELECT smtpserver, smtpuser, smtppassword, smtpport  FROM event_settings WHERE `userid` = '$userid'");
   $row = db_fetch_array($result);
   return $row;  
 }
 
 function get_user_twitter($userid) {
-  $result = db_query("SELECT consumerkey, consumersecret, usertoken, usersecret FROM users WHERE `id` = '$userid'");
+  $result = db_query("SELECT consumerkey, consumersecret, usertoken, usersecret FROM event_settings WHERE `userid` = '$userid'");
   $row = db_fetch_array($result);
   return $row;  
 }
 
 function get_user_prowl($userid) {
-  $result = db_query("SELECT prowlkey FROM users WHERE `id` = '$userid'");
+  $result = db_query("SELECT prowlkey FROM event_settings WHERE `userid` = '$userid'");
   $row = db_fetch_array($result);
   return $row;  
 }

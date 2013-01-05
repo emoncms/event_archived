@@ -50,156 +50,48 @@
       $output['message'] = "Event deleted";
     }
 
+    else if ($action == 'settings' && $session['write'])
+    {
+      $settings = get_event_settings($session['userid']);
+      $output['content'] = view("event/event_settings_view.php", array('user'=>$settings));
+    }
+    
+    //--------------------------------------------------------------------------
+    // SET TWITTER
+    // http://yoursite/emoncms/user/settwitter
+    //--------------------------------------------------------------------------
+    else if ($action == 'savesettings' && $session['write'])
+    {
+      // Store userlang in database
+
+      $prowlkey = post('prowlkey');
+
+      $smtpserver = post('smtpserver');
+      $message = post('message');
+      $smtpuser = post('smtpuser');
+      $smtppassword = post('smtppassword');
+      $smtpport = preg_replace('/[^\w\s-]/','',post('smtpport'));
+
+      $consumerkey = post('consumerkey');
+      $consumersecret = post('consumersecret');
+      $usertoken = post('usertoken');
+      $usersecret = post('usersecret');
+
+      set_event_settings($session['userid'],$prowlkey,$message,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
+
+      // Reload the page	  	
+      if ($format == 'html')
+      {
+        header("Location: settings");
+      }
+    }
+
     else if ($session['write'])
     {
       $event_list = event_list($userid);
       $feeds = get_user_feed_names($userid);
       $output['content'] = view("event/event_list.php", array('event_list'=>$event_list, 'feeds'=>$feeds));
     }
-
-    if ($action == 'run' && $session['write'])
-    {
-      $event_list = event_list($userid);
-
-      foreach ($event_list as $event)
-      {
-        $time = strtotime(get_feed_field($event['eventfeed'],'time'));        
-        $value = get_feed_field($event['eventfeed'],'value');
-        $name = get_feed_field($event['eventfeed'],'name');
-
-        // More than
-        if ($event['eventtype']==0)
-        {
-          if ($value > $event['eventvalue']) 
-          {
-            // echo "Feed ".$name." value (".$value.") is more than set value (".$event['eventvalue'].") ";
-
-            // Sending email
-            if ($event['action']==0)
-            {
-              event_set_lasttime($userid,$event['id'],time());
-              if ((time()-$event['lasttime'])>120) echo "sending email";
-            }
-
-            // set feed
-            if ($event['action']==1)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
-              set_feed_field($event['setfeed'],'value',$event['setvalue']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-            
-            if ($event['action']==2)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
-              set_feed_field($event['callcurl'],'value',$event['callcurl']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            // echo "<br>";
-          }
-        }
-
-        // Less than
-        if ($event['eventtype']==1)
-        {
-          if ($value < $event['eventvalue']) 
-          {
-            // echo "Feed ".$name." value (".$value.") is less than set value (".$event['eventvalue'].") ";
-
-            // Sending email
-            if ($event['action']==0)
-            {
-              event_set_lasttime($userid,$event['id'],time());
-              if ((time()-$event['lasttime'])>120) echo "sending email";
-            }
-
-            if ($event['action']==1)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
-              set_feed_field($event['setfeed'],'value',$event['setvalue']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            if ($event['action']==2)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
-              set_feed_field($event['callcurl'],'value',$event['callcurl']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            // echo "<br>";
-          }
-        }
-
-        // Equal to
-        if ($event['eventtype']==2)
-        {
-          if ($value == $event['eventvalue']) 
-          {
-            // echo "Feed ".$name." value (".$value.") is equal to set value (".$event['eventvalue'].") ";
-
-            // Sending email
-            if ($event['action']==0)
-            {
-              event_set_lasttime($$userid,$event['id'],time());
-              if ((time()-$event['lasttime'])>120) echo "sending email";
-            }
-
-            if ($event['action']==1)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
-              set_feed_field($event['setfeed'],'value',$event['setvalue']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            if ($event['action']==2)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['callcurl'];
-              set_feed_field($event['callcurl'],'value',$event['callcurl']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            // echo "<br>";
-          }
-        }
-
-        // Inactive
-        if ($event['eventtype']==3)
-        {
-          if (((time()-$time)/3600)>24) 
-          {
-            // echo "Feed: ".$name." is inactive: ";
-
-            // Sending email
-            if ($event['action']==0)
-            {
-              event_set_lasttime($$userid,$event['id'],time());
-              if ((time()-$event['lasttime'])>120) echo "sending email";
-            }
-
-            if ($event['action']==1)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
-              set_feed_field($event['setfeed'],'value',$event['setvalue']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-            if ($event['action']==2)
-            {
-              echo "setting feed ".get_feed_field($event['setfeed'],'name')." = ".$event['setvalue'];
-              set_feed_field($event['setfeed'],'value',$event['setvalue']);
-              set_feed_field($event['setfeed'],'time',date("Y-n-j H:i:s",time()));
-            }
-
-
-            // echo "<br>";
-          }
-        }
-
-      }
-    }
-
 
     return $output;
   }
