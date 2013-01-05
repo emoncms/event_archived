@@ -17,7 +17,7 @@
 
     <label><?php echo _('SMTP password'); ?></label>
     <?php
-    $salt = '34534543';
+    $salt = get_user_salt($user['userid']);
     $smtppassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($user['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
     ?>
     <input type="password" name="smtppassword"  value="<?php echo $smtppassword; ?>" />

@@ -187,7 +187,9 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     $mail->Host       = $smtp['smtpserver'];     // sets GMAIL as the SMTP server
                     $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
                     $mail->Username   = $smtp['smtpuser'];       // GMAIL username
-                    $salt = '34534543';
+                    $salt = get_user_salt($row['userid']);
+                    echo $salt; exit;
+
 
                     $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
                     
