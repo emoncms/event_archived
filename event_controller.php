@@ -33,13 +33,14 @@
       $eventvalue = floatval(get('eventvalue'));
       $action = intval(get('action'));
       $setfeed = intval(get('setfeed'));
+      $setemail = get('setemail');
       $setvalue = floatval(get('setvalue'));
       $callcurl = get('callcurl');
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
       
-      event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority);
+      event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
       $output['message'] = "Event added";
     }
 

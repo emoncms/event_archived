@@ -24,9 +24,9 @@ function event_set_lasttime($userid,$id,$time)
   db_query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
 }
 
-function event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setvalue,$callcurl,$message,$mutetime,$priority)
+function event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
 {
-  db_query("INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setvalue','0','$callcurl','$mutetime','$priority','$message')");
+  db_query("INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message')");
 }
 
 function event_delete($userid,$id)

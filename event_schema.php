@@ -21,6 +21,7 @@ $schema['event'] = array(
   'eventvalue' => array('type' => 'float'),
   'action' => array('type' => 'int(11)'),
   'setfeed' => array('type' => 'int(11)'),
+  'setemail' => array('type' => 'text'),
   'setvalue' => array('type' => 'float'),
   'callcurl' => array('type' => 'text'),
   'lasttime' => array('type' => 'int(11)'),
