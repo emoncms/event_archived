@@ -4,7 +4,7 @@ $schema['event_settings'] = array(
   'userid' => array('type' => 'int(11)'),
   'smtpserver' => array('type' => 'varchar(60)'),
   'smtpuser' => array('type' => 'varchar(60)'),
-  'smtppassword' => array('type' => 'varchar(40)'),
+  'smtppassword' => array('type' => 'varchar(128)'),
   'smtpport' => array('type' => 'varchar(3)'),
   'consumerkey' => array('type' => 'varchar(60)'),
   'consumersecret' => array('type' => 'varchar(60)'),

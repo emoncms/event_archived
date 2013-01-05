@@ -100,14 +100,14 @@ function get_user_twitter($userid) {
 function get_user_prowl($userid) {
   $result = db_query("SELECT prowlkey FROM event_settings WHERE `userid` = '$userid'");
   $row = db_fetch_array($result);
-  return $row;  
+  return $row;
 }
 
 function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
     global $session;
     $userid = $session['userid'];
-    
+
     $result = db_query("SELECT * FROM event WHERE eventfeed = $feedid");
 
     // check type
@@ -187,7 +187,9 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     $mail->Host       = $smtp['smtpserver'];     // sets GMAIL as the SMTP server
                     $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
                     $mail->Username   = $smtp['smtpuser'];       // GMAIL username
-                    $mail->Password   = $smtp['smtppassword'];   // GMAIL password
+                    $salt = '34534543';
+
+                    $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
                     
                     $mail->SetFrom($smtp['smtpuser'], 'emoncms');
                     
