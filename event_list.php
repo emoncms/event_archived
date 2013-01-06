@@ -46,6 +46,8 @@
     <th></th>
     <th></th>
     <th></th>
+    <th></th>
+    <th></th>
   </tr>
   <?php $i=0; foreach ($event_list as $item) { $i++; ?>
   <tr class="d<?php echo ($i & 1); ?>" >
@@ -96,6 +98,8 @@
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
+    <td><?php echo $item['message']; ?> </td>
+    <td><?php echo $item['mutetime']; ?> secs</td>
     
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
   </tr>
