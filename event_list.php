@@ -183,11 +183,11 @@
           <option value="300">5 min</option>
           <option value="600">10 min</option>
           <option value="1800">30 min</option>
-          <option value="3600">1 hr</option>
-          <option value="14400">3 hr</option>
-          <option value="28800">6 hr</option>
-          <option value="57600">12 hr</option>
-          <option value="86400">24 hr</option>
+          <option value="3600">1 hour</option>
+          <option value="14400">3 hour</option>
+          <option value="28800">6 hour</option>
+          <option value="57600">12 hour</option>
+          <option value="86400">24 hour</option>
       </select>
  
       <div id="addevent" class="btn btn-info" >Add</div>
