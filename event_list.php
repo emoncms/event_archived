@@ -176,7 +176,11 @@
 
       <select id="action" name="mutetime" style="width:100px; margin:0px;">
           <option value="0">No mute</option>
+          <option value="5">5 secs</option>
+          <option value="15">15 secs</option>
+          <option value="30">30 secs</option>
           <option value="60">1 min</option>
+          <option value="300">5 min</option>
           <option value="600">10 min</option>
           <option value="1800">30 min</option>
           <option value="3600">1 hr</option>
