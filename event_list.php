@@ -123,7 +123,9 @@
       <span style="font-weight:bold;" >is</span> 
       <select id="eventtype" name="eventtype" style="width:100px; margin:0px;">
           <option value="0" >more than</option>
+          <option value="5" >increases by</option>
           <option value="1" >less than</option>
+          <option value="6" >reduces by</option>
           <option value="2" >equal to</option>
           <option value="3" >inactive</option>
           <option value="4" >is updated</option>
