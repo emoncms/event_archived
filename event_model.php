@@ -147,21 +147,30 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 break;
             case 5:
                 // increased by
-                $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+                $feedname = 'feed_'.$feedid;
+                $resultprev = db_query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
+                //echo "INC == ".$value." > ".$rowprev['data']."+".$row['eventvalue'];
+                if ($value > ($rowprev['data']+$row['eventvalue'])) {
                     $sendAlert = 1;
                     }
                 break;
             case 6:
                 // decreased by
-                $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+                $feedname = 'feed_'.$feedid;
+                $resultprev = db_query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
+
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
+
+                //echo "DEC == ".$value."<". $rowprev['data']."-".$row['eventvalue'];
+                if ($value < ($rowprev['data']-$row['eventvalue'])) {
                     $sendAlert = 1;
                     }
                 break;
         }
+        
+        63+125 = 188
+        if new val > 188 alert
 
         // event type
         if ($sendAlert == 1) {
