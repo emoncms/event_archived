@@ -146,18 +146,18 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 $sendAlert = 1;
                 break;
             case 5:
-                // decreased by
+                // increased by
                 $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
+                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
                     $sendAlert = 1;
                     }
                 break;
             case 6:
-                // updated by
+                // decreased by
                 $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
+                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
                     $sendAlert = 1;
                     }
                 break;
@@ -173,7 +173,8 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
                     $mail             = new PHPMailer();
                     
-                    $body             = $row['message'];
+                	$body = str_replace('{value}', $value, $row['message']);
+
                     if (empty($body)) { $body = "No message body"; }
                     //$body             = eregi_replace("[\]",'',$body);
                     
@@ -188,8 +189,6 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
                     $mail->Username   = $smtp['smtpuser'];       // GMAIL username
                     $salt = get_user_salt($row['userid']);
-                    echo $salt; exit;
-
 
                     $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
                     

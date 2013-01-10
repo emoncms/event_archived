@@ -46,6 +46,8 @@
     <th></th>
     <th></th>
     <th></th>
+    <th></th>
+    <th></th>
   </tr>
   <?php $i=0; foreach ($event_list as $item) { $i++; ?>
   <tr class="d<?php echo ($i & 1); ?>" >
@@ -96,6 +98,8 @@
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
+    <td><?php echo $item['message']; ?> </td>
+    <td><?php echo $item['mutetime']; ?> secs</td>
     
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
   </tr>
@@ -119,7 +123,9 @@
       <span style="font-weight:bold;" >is</span> 
       <select id="eventtype" name="eventtype" style="width:100px; margin:0px;">
           <option value="0" >more than</option>
+          <option value="5" >increases by</option>
           <option value="1" >less than</option>
+          <option value="6" >reduces by</option>
           <option value="2" >equal to</option>
           <option value="3" >inactive</option>
           <option value="4" >is updated</option>
@@ -176,14 +182,18 @@
 
       <select id="action" name="mutetime" style="width:100px; margin:0px;">
           <option value="0">No mute</option>
+          <option value="5">5 secs</option>
+          <option value="15">15 secs</option>
+          <option value="30">30 secs</option>
           <option value="60">1 min</option>
+          <option value="300">5 min</option>
           <option value="600">10 min</option>
           <option value="1800">30 min</option>
-          <option value="3600">1 hr</option>
-          <option value="14400">3 hr</option>
-          <option value="28800">6 hr</option>
-          <option value="57600">12 hr</option>
-          <option value="86400">24 hr</option>
+          <option value="3600">1 hour</option>
+          <option value="14400">3 hour</option>
+          <option value="28800">6 hour</option>
+          <option value="57600">12 hour</option>
+          <option value="86400">24 hour</option>
       </select>
  
       <div id="addevent" class="btn btn-info" >Add</div>
