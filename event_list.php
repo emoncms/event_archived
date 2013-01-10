@@ -61,6 +61,8 @@
     if ($item['eventtype']==2) echo "==";
     if ($item['eventtype']==3) echo "inactive";
     if ($item['eventtype']==4) echo "updated";
+    if ($item['eventtype']==5) echo "inc by";
+    if ($item['eventtype']==6) echo "dec by";
     ?></td>
     <td><?php if ($item['eventtype']!=3) echo $item['eventvalue']; ?></td>
     <td>
