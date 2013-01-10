@@ -146,18 +146,18 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 $sendAlert = 1;
                 break;
             case 5:
-                // decreased by
+                // increased by
                 $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
+                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
                     $sendAlert = 1;
                     }
                 break;
             case 6:
-                // updated by
+                // decreased by
                 $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
+                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
                     $sendAlert = 1;
                     }
                 break;
