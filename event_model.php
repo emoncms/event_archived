@@ -169,9 +169,6 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 break;
         }
         
-        63+125 = 188
-        if new val > 188 alert
-
         // event type
         if ($sendAlert == 1) {
             switch($row['action']) {
