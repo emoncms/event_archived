@@ -283,12 +283,13 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 	
                 	$oMsg->addApiKey($prowl['prowlkey']);
                 
-                	$oMsg->setEvent('emoncms event');
++                       $message = htmlspecialchars(str_replace('{value}', $valu
++                       $oMsg->setEvent($message);
                 	
                 	// These are optional:
                 	$message = str_replace('{value}', $value, $row['message']);
                 	$oMsg->setDescription($message);
-                	$oMsg->setApplication('emoncms application');
+                	$oMsg->setApplication('emoncms');
                 	
                 	$oResponse = $oProwl->push($oMsg);
                 	
