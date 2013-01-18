@@ -288,7 +288,7 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
                 	
                 	// These are optional:
-                	$message = 'event at '.date("Y-m-d h:i:s",time());
+                	$message = 'event at '.date("Y-m-d H:i:s",time());
                 	$oMsg->setDescription($message);
                 	$oMsg->setApplication('emoncms');
                 	
