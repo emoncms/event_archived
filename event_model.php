@@ -283,11 +283,12 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 	
                 	$oMsg->addApiKey($prowl['prowlkey']);
                 
-+                       $message = htmlspecialchars(str_replace('{value}', $valu
-+                       $oMsg->setEvent($message);
+                	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
+                	$oMsg->setEvent($message);
+
                 	
                 	// These are optional:
-                	$message = str_replace('{value}', $value, $row['message']);
+                	$message = 'event at '.date("Y-m-d h:i:s",time());
                 	$oMsg->setDescription($message);
                 	$oMsg->setApplication('emoncms');
                 	
