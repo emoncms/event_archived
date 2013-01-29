@@ -146,23 +146,29 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 $sendAlert = 1;
                 break;
             case 5:
-                // decreased by
-                $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+                // increased by
+                $feedname = 'feed_'.$feedid;
+                $resultprev = db_query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) < $resultprev['value']) {
+                //echo "INC == ".$value." > ".$rowprev['data']."+".$row['eventvalue'];
+                if ($value > ($rowprev['data']+$row['eventvalue'])) {
                     $sendAlert = 1;
                     }
                 break;
             case 6:
-                // updated by
-                $resultprev = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+                // decreased by
+                $feedname = 'feed_'.$feedid;
+                $resultprev = db_query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
+
                 $rowprev = db_fetch_array($resultprev);
-                if (($row['value']+$row['valuechange']) > $resultprev['value']) {
+
+                //echo "DEC == ".$value."<". $rowprev['data']."-".$row['eventvalue'];
+                if ($value < ($rowprev['data']-$row['eventvalue'])) {
                     $sendAlert = 1;
                     }
                 break;
         }
-
+        
         // event type
         if ($sendAlert == 1) {
             switch($row['action']) {
@@ -173,7 +179,8 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
                     $mail             = new PHPMailer();
                     
-                    $body             = $row['message'];
+                	$body = str_replace('{value}', $value, $row['message']);
+
                     if (empty($body)) { $body = "No message body"; }
                     //$body             = eregi_replace("[\]",'',$body);
                     
@@ -188,8 +195,6 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
                     $mail->Username   = $smtp['smtpuser'];       // GMAIL username
                     $salt = get_user_salt($row['userid']);
-                    echo $salt; exit;
-
 
                     $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
                     
@@ -278,12 +283,14 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                 	
                 	$oMsg->addApiKey($prowl['prowlkey']);
                 
-                	$oMsg->setEvent('emoncms event');
+                	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
+                	$oMsg->setEvent($message);
+
                 	
                 	// These are optional:
-                	$message = str_replace('{value}', $value, $row['message']);
+                	$message = 'event at '.date("Y-m-d H:i:s",time());
                 	$oMsg->setDescription($message);
-                	$oMsg->setApplication('emoncms application');
+                	$oMsg->setApplication('emoncms');
                 	
                 	$oResponse = $oProwl->push($oMsg);
                 	
