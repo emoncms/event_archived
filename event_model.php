@@ -233,10 +233,15 @@ function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
                     // set URL and other appropriate options
                     curl_setopt($ch, CURLOPT_URL, $row['callcurl']);
                     curl_setopt($ch, CURLOPT_HEADER, 0);
+                    curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+
                     // grab URL and pass it to the browser
                     curl_exec($ch);
                     // close cURL resource, and free up system resources
                     curl_close($ch);
+		    error_log("Curl Log:".$row['callcurl']);
+
                     break;
                 case 3:
                     // Twitter
