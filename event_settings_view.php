@@ -1,3 +1,6 @@
+
+<?php global $user,$session; ?>
+
 <h2>Event settings</h2>
 
 <form action="savesettings" method="post">
@@ -8,24 +11,24 @@
     <h3><?php echo _('Email settings'); ?></h3>
     
     <label><?php echo _('SMTP server'); ?></label>
-    <input type="text" name="smtpserver" value="<?php echo $user['smtpserver']; ?>" />
+    <input type="text" name="smtpserver" value="<?php echo $settings['smtpserver']; ?>" />
     <br>
     
     <label><?php echo _('SMTP user'); ?></label>
-    <input type="text" name="smtpuser"  value="<?php echo $user['smtpuser']; ?>" />
+    <input type="text" name="smtpuser"  value="<?php echo $settings['smtpuser']; ?>" />
     <br>
 
     <label><?php echo _('SMTP password'); ?></label>
     <?php
-    $salt = get_user_salt($user['userid']);
-    $smtppassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($user['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
+    $salt = $user->get_salt($session['userid']);
+    $smtppassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($settings['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
     ?>
     <input type="password" name="smtppassword"  value="<?php echo $smtppassword; ?>" />
     <br>    
 
     <select name="smtpport">
-        <option <?php if ($user['smtpport'] == '25') { echo "selected"; }?>  value="25">25 (No SSL)</option>
-        <option <?php if ($user['smtpport'] == '465') { echo "selected"; }?> value="465">465 (SSL)</option>    
+        <option <?php if ($settings['smtpport'] == '25') { echo "selected"; }?>  value="25">25 (No SSL)</option>
+        <option <?php if ($settings['smtpport'] == '465') { echo "selected"; }?> value="465">465 (SSL)</option>    
     </select>
     <br>
 
@@ -35,13 +38,13 @@
 
     <h3><?php echo _('Twitter settings'); ?></h3>
     <label><?php echo _('Consumer key:'); ?></label>
-    <input type="text" name="consumerkey" value="<?php echo $user['consumerkey']; ?>"/>
+    <input type="text" name="consumerkey" value="<?php echo $settings['consumerkey']; ?>"/>
     <label><?php echo _('Consumer secret:'); ?></label>
-    <input type="text" name="consumersecret" value="<?php echo $user['consumersecret']; ?>"/>
+    <input type="text" name="consumersecret" value="<?php echo $settings['consumersecret']; ?>"/>
     <label><?php echo _('Access token:'); ?></label>
-    <input type="text" name="usertoken" value="<?php echo $user['usertoken']; ?>"/>
+    <input type="text" name="usertoken" value="<?php echo $settings['usertoken']; ?>"/>
     <label><?php echo _('Access Token secret:'); ?></label>
-    <input type="text" name="usersecret" value="<?php echo $user['usersecret']; ?>"/>
+    <input type="text" name="usersecret" value="<?php echo $settings['usersecret']; ?>"/>
     <br>
     
   </div>
@@ -49,7 +52,7 @@
 
     <h3><?php echo _('Prowl settings'); ?></h3>
     <label><?php echo _('Prowl key:'); ?></label>
-    <input type="text" name="prowlkey" value="<?php echo $user['prowlkey']; ?>" />
+    <input type="text" name="prowlkey" value="<?php echo $settings['prowlkey']; ?>" />
     <br>
 
   </div>
