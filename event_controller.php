@@ -14,19 +14,18 @@
 
   function event_controller()
   {
+    global $mysqli,$user, $session, $route;
+
+    global $feed;
+    include "Modules/feed/feed_model.php";
+    $feed = new Feed($mysqli);
+
     require "Modules/event/event_model.php";
-    require "Modules/feed/feed_model.php";
-    global $session, $route;
-
-    $format = $route['format'];
-    $action = $route['action'];
-
-    $output['content'] = "";
-    $output['message'] = "";
+    $event = new Event($mysqli);
 
     $userid = $session['userid'];
 
-    if ($action == 'add' && $session['write'])
+    if ($route->action == 'add' && $session['write'])
     {
       $eventfeed = intval(get('eventfeed'));
       $eventtype = intval(get('eventtype'));
@@ -40,28 +39,28 @@
       $priority = get('priority');
       $message = get('message');
       
-      event_add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
-      $output['message'] = "Event added";
+      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $result = "Event added";
     }
 
-    else if ($action == 'delete' && $session['write'])
+    else if ($route->action == 'delete' && $session['write'])
     {
       $id = intval(get('id'));
-      event_delete($userid,$id);
-      $output['message'] = "Event deleted";
+      $event->delete($userid,$id);
+      $result = "Event deleted";
     }
 
-    else if ($action == 'settings' && $session['write'])
+    else if ($route->action == 'settings' && $session['write'])
     {
-      $settings = get_event_settings($session['userid']);
-      $output['content'] = view("event/event_settings_view.php", array('user'=>$settings));
+      $settings = $event->get_settings($session['userid']);
+      $result = view("Modules/event/event_settings_view.php", array('settings'=>$settings));
     }
     
     //--------------------------------------------------------------------------
     // SET TWITTER
     // http://yoursite/emoncms/user/settwitter
     //--------------------------------------------------------------------------
-    else if ($action == 'savesettings' && $session['write'])
+    else if ($route->action == 'savesettings' && $session['write'])
     {
       // Store userlang in database
 
@@ -70,7 +69,7 @@
       $smtpserver = post('smtpserver');
       $smtpuser = post('smtpuser');
       
-      $salt = get_user_salt($session['userid']);
+      $salt = $user->get_salt($session['userid']);
       $smtppassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('smtppassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));	
       $smtpport = preg_replace('/[^\w\s-]/','',post('smtpport'));
 
@@ -79,21 +78,15 @@
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
 
-      set_event_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
-
-      // Reload the page	  	
-      if ($format == 'html')
-      {
-        header("Location: settings");
-      }
+      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
     }
 
     else if ($session['write'])
     {
-      $event_list = event_list($userid);
-      $feeds = get_user_feed_names($userid);
-      $output['content'] = view("event/event_list.php", array('event_list'=>$event_list, 'feeds'=>$feeds));
+      $list = $event->eventlist($userid);
+      $feeds = $feed->get_user_feed_names($userid);
+      $result = view("Modules/event/event_list.php", array('event_list'=>$list, 'feeds'=>$feeds));
     }
 
-    return $output;
+    return array('content'=>$result);
   }

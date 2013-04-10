@@ -15,8 +15,7 @@
 
 ?>
 
-<?php global $path; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
+<?php global $path, $feed; ?>
 
 <div style="float:right;"><a href="<?php echo $path; ?>event/settings">Event Settings</a></div>
 <h2>Event</h2>
@@ -32,27 +31,12 @@
 <p>3) Enter a value</p> 
 </div>
 <?php } else { ?>
-<table class="catlist" style="">
-  <tr>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
+<table class="table table-hover" style="">
+  
   <?php $i=0; foreach ($event_list as $item) { $i++; ?>
   <tr class="d<?php echo ($i & 1); ?>" >
     <td><i>if</i></td>
-    <td><b><?php echo get_feed_field($item['eventfeed'],'name'); ?></b></td>
+    <td><b><?php echo $feed->get_field($item['eventfeed'],'name'); ?></b></td>
 
     <td>
     <?php 
@@ -68,10 +52,10 @@
     <td>
     <?php 
     $state = false;
-    if ($item['eventtype']==0 && (get_feed_field($item['eventfeed'],'value')>$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==1 && (get_feed_field($item['eventfeed'],'value')<$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==2 && (get_feed_field($item['eventfeed'],'value')==$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==3 && (((time()-strtotime(get_feed_field($item['eventfeed'],'time')))/3600)>24)) $state = true;
+    if ($item['eventtype']==0 && ($feed->get_field($item['eventfeed'],'value')>$item['eventvalue'])) $state = true;
+    if ($item['eventtype']==1 && ($feed->get_field($item['eventfeed'],'value')<$item['eventvalue'])) $state = true;
+    if ($item['eventtype']==2 && ($feed->get_field($item['eventfeed'],'value')==$item['eventvalue'])) $state = true;
+    if ($item['eventtype']==3 && (((time()-strtotime($feed->get_field($item['eventfeed'],'time')))/3600)>24)) $state = true;
     // Perhaps a n/a state?
     //if ($item['eventtype']==4) $state = false;
     if ($state == true) echo '<span class="label label-success" >TRUE</span>'; else echo '<span class="label label-important" >FALSE</span>';
@@ -95,7 +79,7 @@
     if ($item['action']==4) echo "send prowl"; 
     ?></td>
 
-    <td><?php if ($item['action']==1) echo get_feed_field($item['setfeed'],'name'); ?></td>
+    <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
     <td><i><?php if ($item['action']==1) echo "="; ?></i></td>
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
