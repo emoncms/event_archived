@@ -112,19 +112,21 @@ class Event
       return $row;
     }
 
+
     public function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
 
-        global $session;
+        global $user,$session,$feed;
         $userid = $session['userid'];
 
         $result = $this->mysqli->query("SELECT * FROM event WHERE eventfeed = $feedid");
 
         // check type
         while ($row = $result->fetch_array()) {
+
             if ($row['lasttime']+$row['mutetime'] > time() ) {
                 return 0;    
             }
-            
+           
             $sendAlert = 0;
             switch($row['eventtype']) {
                 case 0:
@@ -184,7 +186,7 @@ class Event
                     case 0:
                         // email
                         require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.phpmailer.php');
-                        $smtp = get_user_smtp($userid);
+                        $smtp = $this->get_settings($userid);
 
                         $mail             = new PHPMailer();
                         
@@ -200,24 +202,24 @@ class Event
                         $mail->SMTPAuth   = true;                  // enable SMTP authentication
                         $mail->SMTPSecure = "ssl";                 // sets the prefix to the servier
 
-                        $mail->Host       = $smtp['smtpserver'];     // sets GMAIL as the SMTP server
-                        $mail->Port       = $smtp['smtpport'];       // set the SMTP port for the GMAIL server
+                        $mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
+                        $mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
                         $mail->Username   = $smtp['smtpuser'];       // GMAIL username
-                        $salt = get_user_salt($row['userid']);
+                        $salt = $user->get_salt($userid);
 
                         $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
-                        
-                        $mail->SetFrom($smtp['smtpuser'], 'emoncms');
+                       
+                        $address = $smtp['smtpuser'];
+                        $mail->SetFrom($address, 'emoncms');
                         
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
                         
-                        $mail->Subject    = "emoncms update";
+                        $mail->Subject    = "emoncms update on feed -> " . $feed->get_field($row['eventfeed'],'name');;
                         
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
                         
                         $mail->MsgHTML($body);
-                        
-                        $address = $smtp['smtpuser'];
+                    
                         $mail->AddAddress($address, "emoncms");
                         
                         //$mail->AddAttachment("images/phpmailer.gif");      // attachment
@@ -225,8 +227,10 @@ class Event
                         
                         if(!$mail->Send()) {
                           echo "Mailer Error: " . $mail->ErrorInfo;
+                          error_log("Mailer Error: " . $mail->ErrorInfo); 
                         } else {
                           echo "Message sent!";
+                          error_log("Message sent"); 
                         }
 
                         break;
