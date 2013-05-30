@@ -94,7 +94,7 @@
 <?php } ?>
 
 
-<form id="eventform" action="event/add" method="get">
+<form id="eventform" action="event/add" method="get" onsubmit="return false;">>
 
   <div style=" background-color:#eee; margin-bottom:10px; border: 1px solid #ddd">
     <div style="padding:10px;  border-top: 1px solid #fff; ">
@@ -194,12 +194,14 @@
   var path =   "<?php echo $path; ?>";
 
   $("#addevent").click(function() {
-    $.ajax({type:'GET',url:path+'event/add.json',data:$('#eventform').serialize(),success:location.reload()});
+    $.ajax({type:'GET',url:path+'event/add.json',data:$('#eventform').serialize(),success:function(){location.reload();}});
+    return false;
   });
 
   $(".deleteevent").click(function() {
     var eventid = $(this).attr("eventid");
-    $.ajax({type:'GET',url:path+'event/delete.json',data:'id='+eventid,dataType:'json',success:location.reload()});
+    $.ajax({type:'GET',url:path+'event/delete.json',data:'id='+eventid,dataType:'json',success:function(){location.reload();}});
+    return false;
   });
 
   $("#eventtype").click(function() {
