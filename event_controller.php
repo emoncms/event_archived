@@ -65,6 +65,7 @@
       // Store userlang in database
 
       $prowlkey = post('prowlkey');
+      $nmakey = post('nmakey');
 
       $smtpserver = post('smtpserver');
       $smtpuser = post('smtpuser');
@@ -78,7 +79,7 @@
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
 
-      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport);
+      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey);
     }
 
     else if ($session['write'])

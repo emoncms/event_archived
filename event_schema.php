@@ -10,7 +10,8 @@ $schema['event_settings'] = array(
   'consumersecret' => array('type' => 'varchar(60)'),
   'usertoken' => array('type' => 'varchar(60)'),
   'usersecret' => array('type' => 'varchar(60)'),
-  'prowlkey' => array('type' => 'varchar(60)')
+  'prowlkey' => array('type' => 'varchar(60)'),
+  'nmakey' => array('type' => 'varchar(60)')
 );
 
 $schema['event'] = array(

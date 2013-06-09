@@ -56,7 +56,7 @@ class Event
 
 
     // Set all event settings in one save
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport)
+    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -67,7 +67,7 @@ class Event
       }
       else
       {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
+        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
       }
     }
 
@@ -108,6 +108,12 @@ class Event
 
     public function get_user_prowl($userid) {
       $result = $this->mysqli->query("SELECT prowlkey FROM event_settings WHERE `userid` = '$userid'");
+      $row = $result->fetch_array();
+      return $row;
+    }
+
+    public function get_user_nma($userid) {
+      $result = $this->mysqli->query("SELECT nmakey FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
       return $row;
     }
