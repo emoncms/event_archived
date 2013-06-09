@@ -323,6 +323,20 @@ class Event
                         }
 
                         break;
+                    case 5:
+                        // NMA
+                        require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
+                        
+                        $nma = get_user_nma($userid);
+
+                        $nma = new nmaApi(array('apikey' => $nma['nmakey']));
+                        
+                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));                        
+                        
+                        if($nma->verify()){
+                            $nma->notify('EmonCMS', 'EmonCMS', $message);
+                        }                        
+                        break;
                 }
             // update the lasttime called
             $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");

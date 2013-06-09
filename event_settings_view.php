@@ -56,6 +56,15 @@
     <br>
 
   </div>
+  <div class="span4">
+
+    <h3><?php echo _('NMA settings'); ?></h3>
+    <label><?php echo _('NMA key:'); ?></label>
+    <input type="text" name="nmakey" value="<?php echo $settings['nmakey']; ?>" />
+    <br>
+
+  </div>
+
 </div>
 
     <input type="submit" class="btn btn-danger" value="<?php echo _('Change'); ?>" />
