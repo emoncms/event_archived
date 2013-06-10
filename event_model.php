@@ -333,7 +333,7 @@ class Event
                         
                     	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));                        
                         
-                        $priority = 0;
+                        $priority = $row['priority'];
                         
                         if($nma->verify()){
                             $nma->notify('EmonCMS', 'EmonCMS', $message, $priority);
