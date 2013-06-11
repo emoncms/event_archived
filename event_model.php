@@ -327,16 +327,15 @@ class Event
                         // NMA
                         require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
                         
-                        $nma = get_settings($userid);
+                        $nmakey = $this->get_user_nma($userid);
 
-                        $nma = new nmaApi(array('apikey' => $nma['nmakey']));
+                        $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
                         
                     	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));                        
-                        
                         $priority = $row['priority'];
                         
                         if($nma->verify()){
-                            $nma->notify('EmonCMS', 'EmonCMS', $message, $priority);
+                            $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }                        
                         break;
                 }
