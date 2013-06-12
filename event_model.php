@@ -35,7 +35,7 @@ class Event
 
     public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
     {
-      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message')";
+      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -74,6 +74,10 @@ class Event
       {
         $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
       }
+    }
+    public function set_status($userid, $id, $status)
+    {
+      $this->mysqli->query("UPDATE event SET disabled = '$status' WHERE userid='$userid' and id = $id");
     }
 
     /*
@@ -123,87 +127,111 @@ class Event
       return $row;
     }
 
+    public function test($userid,$id,$feedid)
+    {
+          global $feed;
+          $t = time();
+          $f = $feed->get($feedid);
+          if($f){
+            $this->check_feed_event($id,$t,$t,$f->value,null,true);
+        }else{
+            return("Wrong input parameters");
+        }
 
-    public function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL) {
+    }
+
+
+    public function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL,$test=false) {
 
         global $user,$session,$feed;
         $userid = $session['userid'];
 
-        $result = $this->mysqli->query("SELECT * FROM event WHERE eventfeed = $feedid or eventtype=3");
+        $sqlFeed = "SELECT * FROM event WHERE `userid` = '$userid'";
+        if ($test){
+            $sqlFeed = $sqlFeed. " and id = $feedid";
+        }else{
+            $sqlFeed = $sqlFeed. " and (`disabled` <> 1 or `disabled` IS NULL) and (eventfeed = $feedid or eventtype=3)";
+        }
+
+        $result = $this->mysqli->query($sqlFeed);
 
         // check type
         while ($row = $result->fetch_array()) {
 
-            if ($row['lasttime']+$row['mutetime'] > time() ) {
+            if ($row['lasttime']+$row['mutetime'] > time() && !$test) {
                 continue;
             }
+            if ($test){
+               $sendAlert = 1;
+            }else{
+                $sendAlert = 0;
 
-            $sendAlert = 0;
-
-            switch($row['eventtype']) {
-                case 0:
-                    // more than
-                    if ($value > $row['eventvalue']) {
-                        $sendAlert = 1;
-                    }
-                    break;
-                case 1:
-                    // less than
-                    if ($value < $row['eventvalue']) {
-                        $sendAlert = 1;
-                    }
-                    break;
-                case 2:
-                    // equal to
-                    if ($value == $row['eventvalue']) {
-                        $sendAlert = 1;
-                    }
-                    break;
-                case 3:
-                    // inactive
-                    // not sure this can be called as no feed updated
-                    //if (((time()-$row['lasttime'])/3600)>24) {}
-                    $feedData = $feed->get($row['eventfeed']);
-                    //error_log("Feeddata: " .$feedData->time);
-                    $t = time()- strtotime($feedData->time);
-                    //error_log("t: " .$t);
-                    if ($t > $row['eventvalue']){
-                       $sendAlert = 1;
-                    }
-                    break;
-                case 4:
-                    // updated
-                    $sendAlert = 1;
-                    break;
-                case 5:
-                    // increased by
-                    $feedname = 'feed_'.$feedid;
-                    $resultprev = $this->mysqli->query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
-                    $rowprev = $resultprev->fetch_array();
-                    //echo "INC == ".$value." > ".$rowprev['data']."+".$row['eventvalue'];
-                    if ($value > ($rowprev['data']+$row['eventvalue'])) {
-                        $sendAlert = 1;
+                switch($row['eventtype']) {
+                    case 0:
+                        // more than
+                        if ($value > $row['eventvalue']) {
+                            $sendAlert = 1;
                         }
-                    break;
-                case 6:
-                    // decreased by
-                    $feedname = 'feed_'.$feedid;
-                    $resultprev = $this->mysqli->query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
-
-                    $rowprev = $resultprev->fetch_array();
-
-                    //echo "DEC == ".$value."<". $rowprev['data']."-".$row['eventvalue'];
-                    if ($value < ($rowprev['data']-$row['eventvalue'])) {
-                        $sendAlert = 1;
+                        break;
+                    case 1:
+                        // less than
+                        if ($value < $row['eventvalue']) {
+                            $sendAlert = 1;
                         }
-                    break;
-                case 7:
-                    // manual update
-                    // Check if event.lasttime is less than feed.time
-                    $feedData = $feed->get($feedid);
-                    if ($feedData->time > $row['lasttime']){
-                       $sendAlert = 1;
-                    }
+                        break;
+                    case 2:
+                        // equal to
+                        if ($value == $row['eventvalue']) {
+                            $sendAlert = 1;
+                        }
+                        break;
+                    case 3:
+                        // inactive
+                        // not sure this can be called as no feed updated
+                        //if (((time()-$row['lasttime'])/3600)>24) {}
+                        $feedData = $feed->get($row['eventfeed']);
+                        //error_log("Feeddata: " .$feedData->time);
+                        $t = time()- strtotime($feedData->time);
+                        //error_log("t: " .$t);
+                        if ($t > $row['eventvalue']){
+                           $sendAlert = 1;
+                        }
+                        break;
+                    case 4:
+                        // updated
+                        $sendAlert = 1;
+                        break;
+                    case 5:
+                        // increased by
+                        $feedname = 'feed_'.$feedid;
+                        $resultprev = $this->mysqli->query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
+                        $rowprev = $resultprev->fetch_array();
+                        //echo "INC == ".$value." > ".$rowprev['data']."+".$row['eventvalue'];
+                        if ($value > ($rowprev['data']+$row['eventvalue'])) {
+                            $sendAlert = 1;
+                            }
+                        break;
+                    case 6:
+                        // decreased by
+                        $feedname = 'feed_'.$feedid;
+                        $resultprev = $this->mysqli->query("SELECT * FROM $feedname ORDER BY `time` DESC LIMIT 1,1");
+
+                        $rowprev = $resultprev->fetch_array();
+
+                        //echo "DEC == ".$value."<". $rowprev['data']."-".$row['eventvalue'];
+                        if ($value < ($rowprev['data']-$row['eventvalue'])) {
+                            $sendAlert = 1;
+                            }
+                        break;
+                    case 7:
+                        // manual update
+                        // Check if event.lasttime is less than feed.time
+                        $feedData = $feed->get($feedid);
+                        if ($feedData->time > $row['lasttime']){
+                           $sendAlert = 1;
+                        }
+                }
+
             }
 
             // event type
@@ -220,6 +248,10 @@ class Event
 
                         if (empty($body)) { $body = "No message body"; }
                         //$body             = eregi_replace("[\]",'',$body);
+
+                        if($test){
+                            $body = 'TEST - '.$body;
+                        }
 
                         $mail->IsSMTP(); // telling the class to use SMTP
                         $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
@@ -241,7 +273,9 @@ class Event
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
                         $mail->Subject    = "emoncms update on feed -> " . $feed->get_field($row['eventfeed'],'name');;
-
+                        if($test){
+                            $mail->Subject = 'TEST - '.$mail->Subject;
+                        }
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 
                         $mail->MsgHTML($body);
@@ -316,6 +350,9 @@ class Event
 
                         $body = str_replace('{value}', $value, $row['message']);
                         if (empty($body)) { $body = "No message body"; }
+                        if($test){
+                            $body = 'TEST - '.$body;
+                        }
 
                         // Make the API call
                         $writeconnection->request('POST',
@@ -341,6 +378,9 @@ class Event
                     	$oMsg->addApiKey($prowl['prowlkey']);
 
                     	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
+                        if($test){
+                            $message = 'TEST - '.$message;
+                        }
                     	$oMsg->setEvent($message);
 
 
@@ -365,6 +405,10 @@ class Event
                         $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
 
                     	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
+                        if($test){
+                            $message = 'TEST - '.$message;
+                        }
+
                         $priority = $row['priority'];
 
                         if($nma->verify()){
@@ -375,7 +419,11 @@ class Event
                         break;
                 }
             // update the lasttime called
-            $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+            if(!$test){
+                $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+            }
+
+
             }
         }
     }

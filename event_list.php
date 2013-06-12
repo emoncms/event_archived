@@ -91,6 +91,16 @@
     <td><?php echo $item['mutetime']; ?> secs</td>
 
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
+    <?php
+    if($item['disabled'] != 1){ ?>
+    <td><div class="disableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Disable</div></td>
+    <?php
+    }else{ ?>
+    <td><div class="enableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Enable</div></td>
+
+    <?php
+    } ?>
+    <td><div class="testevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Test</div></td>
   </tr>
   <?php } ?>
 </table>
@@ -208,6 +218,26 @@
     $.ajax({type:'GET',url:path+'event/delete.json',data:'id='+eventid,dataType:'json',success:function(){location.reload();}});
     return false;
   });
+
+  $(".testevent").click(function() {
+    var eventid = $(this).attr("eventid");
+    var feedid = $(this).attr("feedid");
+    $.ajax({type:'GET',url:path+'event/test.json',data:'id='+eventid+'&feedid='+feedid,dataType:'json',success:function(){location.reload();}});
+    return false;
+  });
+
+  $(".enableevent").click(function() {
+    var eventid = $(this).attr("eventid");
+    $.ajax({type:'GET',url:path+'event/status.json',data:'id='+eventid+'&status=0',dataType:'json',success:function(){location.reload();}});
+    return false;
+  });
+
+  $(".disableevent").click(function() {
+    var eventid = $(this).attr("eventid");
+    $.ajax({type:'GET',url:path+'event/status.json',data:'id='+eventid+'&status=1',dataType:'json',success:function(){location.reload();}});
+    return false;
+  });
+
 
   $("#eventtype").change(function() {
     if ($(this).val() == 0) $("#not-inactive").show();
