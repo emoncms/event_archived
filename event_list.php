@@ -77,6 +77,7 @@
     if ($item['action']==2) echo "call url"; 
     if ($item['action']==3) echo "send tweet"; 
     if ($item['action']==4) echo "send prowl"; 
+    if ($item['action']==5) echo "send nma"; 
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
@@ -94,7 +95,7 @@
 <?php } ?>
 
 
-<form id="eventform" action="event/add" method="get" onsubmit="return false;">>
+<form id="eventform" action="event/add" method="get" onsubmit="return false;">
 
   <div style=" background-color:#eee; margin-bottom:10px; border: 1px solid #ddd">
     <div style="padding:10px;  border-top: 1px solid #fff; ">
@@ -129,6 +130,7 @@
           <option value="2" >call url</option>
           <option value="3" >tweet</option>
           <option value="4" >send prowl</option>
+          <option value="5" >send nma</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -210,6 +212,7 @@
     if ($(this).val() == 2) $("#not-inactive").show();
     if ($(this).val() == 3) $("#not-inactive").hide();
     if ($(this).val() == 4) $("#not-inactive").hide();
+    if ($(this).val() == 5) $("#not-inactive").hide();
   });
 
   $("#action").click(function() {
@@ -218,6 +221,7 @@
     if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-prowl").hide();}
     if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
     if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").show();}
+    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
   });
 </script>
 

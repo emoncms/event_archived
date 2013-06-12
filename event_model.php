@@ -56,20 +56,20 @@ class Event
 
 
     // Set all event settings in one save
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport) 
+    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
 
-      if (!$row) 
+      if (!$row)
       {
         $this->mysqli->query("INSERT INTO event_settings (`userid`) VALUES ('$userid')");
       }
       else
       {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
+        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
       }
-    } 
+    }
 
     /*
     public function set_user_prowlkey($userid, $prowlkey, $message)
@@ -91,23 +91,29 @@ class Event
     public function get_settings($userid) {
       $result = $this->mysqli->query("SELECT *  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
-      return $row;  
+      return $row;
     }
 
     public function get_user_smtp($userid) {
       $result = $this->mysqli->query("SELECT smtpserver, smtpuser, smtppassword, smtpport  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
-      return $row;  
+      return $row;
     }
 
     public function get_user_twitter($userid) {
       $result = $this->mysqli->query("SELECT consumerkey, consumersecret, usertoken, usersecret FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
-      return $row;  
+      return $row;
     }
 
     public function get_user_prowl($userid) {
       $result = $this->mysqli->query("SELECT prowlkey FROM event_settings WHERE `userid` = '$userid'");
+      $row = $result->fetch_array();
+      return $row;
+    }
+
+    public function get_user_nma($userid) {
+      $result = $this->mysqli->query("SELECT nmakey FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
       return $row;
     }
@@ -124,9 +130,9 @@ class Event
         while ($row = $result->fetch_array()) {
 
             if ($row['lasttime']+$row['mutetime'] > time() ) {
-                return 0;    
+                return 0;
             }
-           
+
             $sendAlert = 0;
             switch($row['eventtype']) {
                 case 0:
@@ -179,7 +185,7 @@ class Event
                         }
                     break;
             }
-            
+
             // event type
             if ($sendAlert == 1) {
                 switch($row['action']) {
@@ -189,12 +195,12 @@ class Event
                         $smtp = $this->get_settings($userid);
 
                         $mail             = new PHPMailer();
-                        
+
                     	$body = str_replace('{value}', $value, $row['message']);
 
                         if (empty($body)) { $body = "No message body"; }
                         //$body             = eregi_replace("[\]",'',$body);
-                        
+
                         $mail->IsSMTP(); // telling the class to use SMTP
                         $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
                                                                    // 1 = errors and messages
@@ -208,29 +214,29 @@ class Event
                         $salt = $user->get_salt($userid);
 
                         $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
-                       
+
                         $address = $smtp['smtpuser'];
                         $mail->SetFrom($address, 'emoncms');
-                        
+
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
-                        
+
                         $mail->Subject    = "emoncms update on feed -> " . $feed->get_field($row['eventfeed'],'name');;
-                        
+
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
-                        
+
                         $mail->MsgHTML($body);
-                    
+
                         $mail->AddAddress($address, "emoncms");
-                        
+
                         //$mail->AddAttachment("images/phpmailer.gif");      // attachment
                         //$mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-                        
+
                         if(!$mail->Send()) {
                           echo "Mailer Error: " . $mail->ErrorInfo;
-                          error_log("Mailer Error: " . $mail->ErrorInfo); 
+                          error_log("Mailer Error: " . $mail->ErrorInfo);
                         } else {
                           echo "Message sent!";
-                          error_log("Message sent"); 
+                          error_log("Message sent");
                         }
 
                         break;
@@ -253,39 +259,39 @@ class Event
                         curl_exec($ch);
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-		        error_log("Curl Log:".$row['callcurl']);
+		                error_log("Curl Log:".$row['callcurl']);
 
                         break;
                     case 3:
                         // Twitter
                         require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/oAuth/tmhOAuth.php');
                         $twitter = get_user_twitter($userid);
-                          
+
                         // Set the authorization values
-                        // In keeping with the OAuth tradition of maximum confusion, 
+                        // In keeping with the OAuth tradition of maximum confusion,
                         // the names of some of these values are different from the Twitter Dev interface
                         // user_token is called Access Token on the Dev site
                         // user_secret is called Access Token Secret on the Dev site
-                        // The values here have asterisks to hide the true contents 
+                        // The values here have asterisks to hide the true contents
                         // You need to use the actual values from Twitter
                         $writeconnection = new tmhOAuth(array(
                             'consumer_key' => $twitter['consumerkey'],
                             'consumer_secret' => $twitter['consumersecret'],
                             'user_token' => $twitter['usertoken'],
                             'user_secret' => $twitter['usersecret'],
-                        )); 
-                        
+                        ));
+
                         $body = str_replace('{value}', $value, $row['message']);
                         if (empty($body)) { $body = "No message body"; }
 
                         // Make the API call
-                        $writeconnection->request('POST', 
+                        $writeconnection->request('POST',
                             $writeconnection->url('1/statuses/update'), array('status' => $body));
 
                         if ($writeconnection->response['code'] != 200) {
                           error_log("Twitter error:".$writeconnection->pr(htmlentities($writeconnection->response['response'])));
-                        }                            
-                        break;                      
+                        }
+                        break;
                     case 4:
                         // Prowl
                         require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlConnector.class.php';
@@ -298,28 +304,43 @@ class Event
 
                     	$oProwl->setIsPostRequest(true);
                     	$oMsg->setPriority($row['priority']);
-                    	
+
                     	$oMsg->addApiKey($prowl['prowlkey']);
-                    
+
                     	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
                     	$oMsg->setEvent($message);
 
-                    	
+
                     	// These are optional:
                     	$message = 'event at '.date("Y-m-d H:i:s",time());
                     	$oMsg->setDescription($message);
                     	$oMsg->setApplication('emoncms');
-                    	
+
                     	$oResponse = $oProwl->push($oMsg);
-                    	
-                		if ($oResponse->isError()) {	
+
+                		if ($oResponse->isError()) {
                             	error_log("Prowl error:".$oResponse->getErrorAsString());
                         }
 
                         break;
+                    case 5:
+                        // NMA
+                        require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
+                        
+                        $nmakey = $this->get_user_nma($userid);
+
+                        $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
+                        
+                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));                        
+                        $priority = $row['priority'];
+                        
+                        if($nma->verify()){
+                            $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
+                        }                        
+                        break;
                 }
             // update the lasttime called
-            $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");                
+            $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
             }
         }
     }
