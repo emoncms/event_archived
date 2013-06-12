@@ -48,6 +48,21 @@
       $event->delete($userid,$id);
       $result = "Event deleted";
     }
+    else if ($route->action == 'status' && $session['write'])
+    {
+      $id = intval(get('id'));
+      $status = intval(get('status'));
+      $event->set_status($userid,$id,$status);
+      $result = "Event deleted";
+    }
+
+    else if ($route->action == 'test' && $session['write'])
+    {
+      $id = intval(get('id'));
+      $feedid = intval(get('feedid'));
+      $event->test($userid,$id,$feedid);
+      $result = "Event Test Sent";
+    }
 
     else if ($route->action == 'settings' && $session['write'])
     {
