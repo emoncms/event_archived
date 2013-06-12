@@ -24,7 +24,6 @@
     $event = new Event($mysqli);
 
     $userid = $session['userid'];
-
     if ($route->action == 'add' && $session['write'])
     {
       $eventfeed = intval(get('eventfeed'));
@@ -38,7 +37,7 @@
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
-      
+
       $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
       $result = "Event added";
     }
@@ -55,7 +54,7 @@
       $settings = $event->get_settings($session['userid']);
       $result = view("Modules/event/event_settings_view.php", array('settings'=>$settings));
     }
-    
+
     //--------------------------------------------------------------------------
     // SET TWITTER
     // http://yoursite/emoncms/user/settwitter
@@ -69,9 +68,9 @@
 
       $smtpserver = post('smtpserver');
       $smtpuser = post('smtpuser');
-      
+
       $salt = $user->get_salt($session['userid']);
-      $smtppassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('smtppassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));	
+      $smtppassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('smtppassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
       $smtpport = preg_replace('/[^\w\s-]/','',post('smtpport'));
 
       $consumerkey = post('consumerkey');

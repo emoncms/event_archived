@@ -35,7 +35,12 @@ class Event
 
     public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
     {
-      $this->mysqli->query("INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message')");
+      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message')";
+      error_log('Mysql Query: ' + $sql);
+      $result = $this->mysqli->query($sql);
+      if (!$result){
+        error_log('Mysql Error: ' + $this->mysqli->error);
+      }
     }
 
     public function delete($userid,$id)
@@ -124,16 +129,17 @@ class Event
         global $user,$session,$feed;
         $userid = $session['userid'];
 
-        $result = $this->mysqli->query("SELECT * FROM event WHERE eventfeed = $feedid");
+        $result = $this->mysqli->query("SELECT * FROM event WHERE eventfeed = $feedid or eventtype=3");
 
         // check type
         while ($row = $result->fetch_array()) {
 
             if ($row['lasttime']+$row['mutetime'] > time() ) {
-                return 0;
+                continue;
             }
 
             $sendAlert = 0;
+
             switch($row['eventtype']) {
                 case 0:
                     // more than
@@ -157,6 +163,13 @@ class Event
                     // inactive
                     // not sure this can be called as no feed updated
                     //if (((time()-$row['lasttime'])/3600)>24) {}
+                    $feedData = $feed->get($row['eventfeed']);
+                    //error_log("Feeddata: " .$feedData->time);
+                    $t = time()- strtotime($feedData->time);
+                    //error_log("t: " .$t);
+                    if ($t > $row['eventvalue']){
+                       $sendAlert = 1;
+                    }
                     break;
                 case 4:
                     // updated
@@ -184,6 +197,13 @@ class Event
                         $sendAlert = 1;
                         }
                     break;
+                case 7:
+                    // manual update
+                    // Check if event.lasttime is less than feed.time
+                    $feedData = $feed->get($feedid);
+                    if ($feedData->time > $row['lasttime']){
+                       $sendAlert = 1;
+                    }
             }
 
             // event type
@@ -226,7 +246,11 @@ class Event
 
                         $mail->MsgHTML($body);
 
-                        $mail->AddAddress($address, "emoncms");
+                        $dest = $address;
+                        if ($row['setemail'] != ''){
+                            $dest = $row['setemail'];
+                        }
+                        $mail->AddAddress($dest, "emoncms");
 
                         //$mail->AddAttachment("images/phpmailer.gif");      // attachment
                         //$mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
@@ -248,18 +272,27 @@ class Event
                                                 break;
                     case 2:
                         // call url
+
+                        $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
+                        if (count($explodedUrl) > 1){
+                           $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, $explodedUrl[1]));
+                        }
                         $ch = curl_init();
+                        $body = $explodedUrl[0] . '?' . $explodedUrl[1];
                         // set URL and other appropriate options
-                        curl_setopt($ch, CURLOPT_URL, $row['callcurl']);
+                        curl_setopt($ch, CURLOPT_URL, $body);
                         curl_setopt($ch, CURLOPT_HEADER, 0);
                         curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
                         curl_setopt($ch, CURLOPT_TIMEOUT, 1);
 
                         // grab URL and pass it to the browser
-                        curl_exec($ch);
+                        if(curl_exec($ch) === false){
+                            error_log("Curl Error:".curl_error($ch));
+                        }
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-		                error_log("Curl Log:".$row['callcurl']);
+		                error_log("Curl Log:".$body);
+
 
                         break;
                     case 3:
@@ -326,17 +359,19 @@ class Event
                     case 5:
                         // NMA
                         require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
-                        
+
                         $nmakey = $this->get_user_nma($userid);
 
                         $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
-                        
-                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));                        
+
+                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
                         $priority = $row['priority'];
-                        
+
                         if($nma->verify()){
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
-                        }                        
+                        }
+
+
                         break;
                 }
             // update the lasttime called
@@ -345,3 +380,4 @@ class Event
         }
     }
 }
+
