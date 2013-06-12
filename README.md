@@ -8,4 +8,5 @@ Prowl, Twitter and Email methods native to application.
 Email currently is biased towards gmail SMTP server.
 
 Requirements
-sudo apt-get install php5-mcrypt php5-curl
+
+`sudo apt-get install php5-mcrypt php5-curl`
