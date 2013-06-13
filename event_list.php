@@ -180,8 +180,8 @@
           <input id="message" name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
-      <span id="not-prowl" style="font-weight:bold;" > priority
-          <select id="action-prowl" name="priority" style="width:100px; margin:0px;">
+      <span id="not-priority" style="font-weight:bold;" > priority
+          <select id="action-priority" name="priority" style="width:100px; margin:0px;">
               <option value="-2">Very Low</option>
               <option value="-1">Moderate</option>
               <option value="0">Normal</option>
@@ -291,12 +291,12 @@
   });
 
   $("#action").change(function() {
-    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
-    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-prowl").hide();}
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-prowl").hide();}
-    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
-    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").show();}
-    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-priority").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-priority").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
+    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
 
   });
 
