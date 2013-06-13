@@ -49,7 +49,7 @@
     if ($item['eventtype']==6) echo "dec by";
     if ($item['eventtype']==7) echo "manual update";
     ?></td>
-    <td><?php if ($item['eventtype']!=3) echo $item['eventvalue']; ?></td>
+    <td><?php echo $item['eventvalue']; ?></td>
     <td>
     <?php
     $state = false;
