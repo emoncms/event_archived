@@ -41,6 +41,25 @@
       $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
       $result = "Event added";
     }
+    if ($route->action == 'edit' && $session['write'])
+    {
+      $eventid = intval(get('eventid'));
+      $eventfeed = intval(get('eventfeed'));
+      $eventtype = intval(get('eventtype'));
+      $eventvalue = floatval(get('eventvalue'));
+      $action = intval(get('action'));
+      $setfeed = intval(get('setfeed'));
+      $setemail = get('setemail');
+      $setvalue = floatval(get('setvalue'));
+      $callcurl = get('callcurl');
+      $mutetime = get('mutetime');
+      $priority = get('priority');
+      $message = get('message');
+
+      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $result = "Event updated";
+    }
+
 
     else if ($route->action == 'delete' && $session['write'])
     {
