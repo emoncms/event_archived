@@ -283,7 +283,7 @@
     if ($(this).val() == 0) $("#not-inactive").show();
     if ($(this).val() == 1) $("#not-inactive").show();
     if ($(this).val() == 2) $("#not-inactive").show();
-    if ($(this).val() == 3) $("#not-inactive").hide();
+    if ($(this).val() == 3) $("#not-inactive").show();
     if ($(this).val() == 4) $("#not-inactive").hide();
     if ($(this).val() == 5) $("#not-inactive").show();
     if ($(this).val() == 6) $("#not-inactive").show();
