@@ -33,13 +33,23 @@ class Event
       $this->mysqli->query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
     }
 
+    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
+    {
+      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message' WHERE `userid` = '$userid' AND `id` = '$id' ";
+      error_log('Mysql Query: ' + $sql);
+      $result = $this->mysqli->query($sql);
+      if (!$result){
+        error_log('Event Update: Mysql Error: ' + $this->mysqli->error);
+      }
+    }
+
     public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
     {
       $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
-        error_log('Mysql Error: ' + $this->mysqli->error);
+        error_log('Event Add: Mysql Error: ' + $this->mysqli->error);
       }
     }
 
@@ -306,10 +316,10 @@ class Event
                                                 break;
                     case 2:
                         // call url
-
+                        $feedData = $feed->get($row['eventfeed']);
                         $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
                         if (count($explodedUrl) > 1){
-                           $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, $explodedUrl[1]));
+                           $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, str_replace('{feed}', $feedData->name, $explodedUrl[1])));
                         }
                         $ch = curl_init();
                         $body = $explodedUrl[0] . '?' . $explodedUrl[1];

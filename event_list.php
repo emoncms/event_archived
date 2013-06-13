@@ -89,6 +89,20 @@
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
     <td><?php echo $item['message']; ?> </td>
     <td><?php echo $item['mutetime']; ?> secs</td>
+   <td><div class="editevent btn"
+            eventid="<?php echo $item['id']; ?>"
+            eventtype="<?php echo $item['eventtype']; ?>"
+            eventvalue="<?php echo $item['eventvalue']; ?>"
+            action="<?php echo $item['action']; ?>"
+            setvalue="<?php echo $item['setvalue']; ?>"
+            setemail="<?php echo $item['setemail']; ?>"
+            setfeed="<?php echo $item['setfeed']; ?>"
+            eventfeed="<?php echo $item['eventfeed']; ?>"
+            callcurl="<?php echo $item['callcurl']; ?>"
+            message="<?php echo $item['message']; ?>"
+            mutetime="<?php echo $item['mutetime']; ?>"
+
+        >Edit</div></td>
 
     <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
     <?php
@@ -114,7 +128,7 @@
       <div style="float:left; padding-top:2px; font-weight:bold;">IF</div>
 
       <div style="float:right;">
-      <select name="eventfeed" style="width:160px; margin:0px;">
+      <select id="eventfeed" name="eventfeed" style="width:160px; margin:0px;">
       <?php foreach ($feeds as $feed){ ?>
       <option value="<?php echo $feed['id']; ?>"><?php echo $feed['name']; ?></option>
       <?php } ?>
@@ -130,9 +144,9 @@
           <option value="4" >is updated</option>
           <option value="7" >manual update</option>
       </select>
-
+      <input id="eventid" name="eventid" type="text" hidden="true" style="display:none" />
       <span id="not-inactive">
-          <input name="eventvalue" type="text" style="width:60px; margin:0px;" />
+          <input id="eventvalue" name="eventvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
       <span style="font-weight:bold;" >: </span>
@@ -147,11 +161,11 @@
       </select>
 
       <span id="not-email" style="display:none">
-          <input name="setemail" type="text" style="width:180px; margin:0px;" />
+          <input id="setemail" name="setemail" type="text" style="width:180px; margin:0px;" />
       </span>
 
       <span id="not-feed" style="display:none">
-          <select name="setfeed" style="width:160px; margin:0px;">
+          <select id="setfeed" name="setfeed" style="width:160px; margin:0px;">
               <?php foreach ($feeds as $feed){ ?>
                   <option value="<?php echo $feed['id']; ?>"><?php echo $feed['name']; ?></option>
               <?php } ?>
@@ -159,15 +173,15 @@
       </span>
 
       <span id="not-value" style="font-weight:bold;" >to
-          <input name="setvalue" type="text" style="width:60px; margin:0px;" />
+          <input id="setvalue" name="setvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
       <span id="not-message" style="font-weight:bold;" > message
-          <input name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
+          <input id="message" name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
       <span id="not-prowl" style="font-weight:bold;" > priority
-          <select id="action" name="priority" style="width:100px; margin:0px;">
+          <select id="action-prowl" name="priority" style="width:100px; margin:0px;">
               <option value="-2">Very Low</option>
               <option value="-1">Moderate</option>
               <option value="0">Normal</option>
@@ -178,7 +192,7 @@
 
 
       <span id="not-curl" style="display:none">
-          <input name="callcurl" type="text" style="width:180px; margin:0px;" />
+          <input id="callcurl" name="callcurl" type="text" style="width:400px; margin:0px;" />
       </span>
 
       <select id="mutetime" name="mutetime" style="width:100px; margin:0px;">
@@ -198,6 +212,7 @@
       </select>
 
       <div id="addevent" class="btn btn-info" >Add</div>
+      <div id="editeventbtn" class="btn btn-info" >Edit</div>
       </div>
       <div style="clear:both"></div>
     </div>
@@ -210,6 +225,11 @@
 
   $("#addevent").click(function() {
     $.ajax({type:'GET',url:path+'event/add.json',data:$('#eventform').serialize(),success:function(){location.reload();}});
+    return false;
+  });
+
+  $("#editeventbtn").click(function() {
+    $.ajax({type:'GET',url:path+'event/edit.json',data:$('#eventform').serialize(),success:function(){location.reload();}});
     return false;
   });
 
@@ -238,6 +258,26 @@
     return false;
   });
 
+  $(".editevent").click(function() {
+    var eventid = $(this).attr("eventid");
+    $("#editeventbtn").show();
+    $("#addevent").hide();
+    $("#eventid").val($(this).attr("eventid"));
+    $("#eventtype").val($(this).attr("eventtype"));
+    $("#eventfeed").val($(this).attr("eventfeed"));
+    $("#eventvalue").val($(this).attr("eventvalue"));
+
+    $("#setvalue").val($(this).attr("setvalue"));
+    $("#setemail").val($(this).attr("setemail"));
+    $("#callcurl").val($(this).attr("callcurl"));
+    $("#action").val($(this).attr("action"));
+    $("#message").val($(this).attr("message"));
+    $("#mutetime").val($(this).attr("mutetime"));
+    $("#eventtype").change();
+    $("#action").change();
+    return false;
+  });
+
 
   $("#eventtype").change(function() {
     if ($(this).val() == 0) $("#not-inactive").show();
@@ -259,5 +299,10 @@
     if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-prowl").hide();}
 
   });
+
+  jQuery(document).ready(function(){
+      $("#editeventbtn").hide();
+});
+
 </script>
 
