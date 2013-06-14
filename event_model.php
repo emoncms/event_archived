@@ -21,13 +21,6 @@ class Event
         $this->mysqli = $mysqli;
     }
 
-    /*
-     $this->mysqli->query("INSERT INTO table (`field`) VALUES ('$value')");
-     $this->mysqli->query("SELECT * FROM table WHERE `field` = '$value'");
-     $this->mysqli->query(UPDATE table SET field = '$value' WHERE `field` = '$value');
-
-    */
-
     public function set_lasttime($userid,$id,$time)
     {
       $this->mysqli->query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
@@ -69,7 +62,6 @@ class Event
       return $list;
     }
 
-
     // Set all event settings in one save
     public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
     {
@@ -89,23 +81,6 @@ class Event
     {
       $this->mysqli->query("UPDATE event SET disabled = '$status' WHERE userid='$userid' and id = $id");
     }
-
-    /*
-    public function set_user_prowlkey($userid, $prowlkey, $message)
-    {
-      $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', message = '$message' WHERE userid='$userid'");
-    }
-
-    public function set_user_twitter($userid, $consumerkey,$consumersecret,$usertoken,$usersecret)
-    {
-      $this->mysqli->query("UPDATE event_settings SET consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret' WHERE userid='$userid'");
-    }
-
-    public function set_user_smtp($userid, $smtpserver, $smtpuser, $smtppassword, $smtpport)
-    {
-      $this->mysqli->query("UPDATE event_settings SET smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
-    }
-    */
 
     public function get_settings($userid) {
       $result = $this->mysqli->query("SELECT *  FROM event_settings WHERE `userid` = '$userid'");
@@ -150,7 +125,6 @@ class Event
 
     }
 
-
     public function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL,$test=false) {
 
         global $user,$session,$feed;
@@ -173,7 +147,7 @@ class Event
             }
             if ($test){
                $sendAlert = 1;
-            }else{
+            } else {
                 $sendAlert = 0;
 
                 switch($row['eventtype']) {
@@ -240,9 +214,9 @@ class Event
                         if ($feedData->time > $row['lasttime']){
                            $sendAlert = 1;
                         }
+                        break;
+                    }
                 }
-
-            }
 
             // event type
             if ($sendAlert == 1) {
@@ -254,13 +228,15 @@ class Event
 
                         $mail             = new PHPMailer();
 
-                    	$body = str_replace('{value}', $value, $row['message']);
+                        $feedData = $feed->get($row['eventfeed']);
+                        
+                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
 
-                        if (empty($body)) { $body = "No message body"; }
+                        if (empty($message)) { $message = "No message body"; }
                         //$body             = eregi_replace("[\]",'',$body);
 
                         if($test){
-                            $body = 'TEST - '.$body;
+                            $message = 'TEST - '.$message;
                         }
 
                         $mail->IsSMTP(); // telling the class to use SMTP
@@ -282,17 +258,13 @@ class Event
 
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
-                        $feedData = $feed->get($row['eventfeed']);
-                        
-                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
-
-                        $mail->Subject    = $message;
+                        $mail->Subject = $message;
                         if($test){
                             $mail->Subject = 'TEST - '.$mail->Subject;
                         }
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 
-                        $mail->MsgHTML($body);
+                        $mail->MsgHTML($message);
 
                         $dest = $address;
                         if ($row['setemail'] != ''){
@@ -340,8 +312,6 @@ class Event
                         // close cURL resource, and free up system resources
                         curl_close($ch);
 		                error_log("Curl Log:".$body);
-
-
                         break;
                     case 3:
                         // Twitter
@@ -403,7 +373,6 @@ class Event
                         }
                     	$oMsg->setEvent($message);
 
-
                     	// These are optional:
                     	$message = 'event at '.date("Y-m-d H:i:s",time());
                     	$oMsg->setDescription($message);
@@ -414,7 +383,6 @@ class Event
                 		if ($oResponse->isError()) {
                             	error_log("Prowl error:".$oResponse->getErrorAsString());
                         }
-
                         break;
                     case 5:
                         // NMA
@@ -437,16 +405,13 @@ class Event
                         if($nma->verify()){
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }
-
-
                         break;
                 }
-            // update the lasttime called
-            if(!$test){
-                $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
-            }
-
-
+                
+                // update the lasttime called
+                if(!$test){
+                    $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+                }
             }
         }
     }
