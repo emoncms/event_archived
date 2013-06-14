@@ -74,12 +74,12 @@
     <td>
 
     <?php
-    if ($item['action']==0) echo "send email";
-    if ($item['action']==1) echo "set feed";
-    if ($item['action']==2) echo "call url";
-    if ($item['action']==3) echo "send tweet";
-    if ($item['action']==4) echo "send prowl";
-    if ($item['action']==5) echo "send nma";
+    if ($item['action']==0) echo "email";
+    if ($item['action']==1) echo "feed";
+    if ($item['action']==2) echo "curl";
+    if ($item['action']==3) echo "tweet";
+    if ($item['action']==4) echo "prowl";
+    if ($item['action']==5) echo "nma";
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>

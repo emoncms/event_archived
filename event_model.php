@@ -282,7 +282,11 @@ class Event
 
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
-                        $mail->Subject    = "emoncms update on feed -> " . $feed->get_field($row['eventfeed'],'name');;
+                        $feedData = $feed->get($row['eventfeed']);
+                        
+                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
+
+                        $mail->Subject    = $message;
                         if($test){
                             $mail->Subject = 'TEST - '.$mail->Subject;
                         }
@@ -358,15 +362,18 @@ class Event
                             'user_secret' => $twitter['usersecret'],
                         ));
 
-                        $body = str_replace('{value}', $value, $row['message']);
-                        if (empty($body)) { $body = "No message body"; }
+                        $feedData = $feed->get($row['eventfeed']);
+                        
+                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
+
+                        if (empty($message)) { $message = "No message body"; }
                         if($test){
-                            $body = 'TEST - '.$body;
+                            $message = 'TEST - '.$message;
                         }
 
                         // Make the API call
                         $writeconnection->request('POST',
-                            $writeconnection->url('1/statuses/update'), array('status' => $body));
+                            $writeconnection->url('1/statuses/update'), array('status' => $message));
 
                         if ($writeconnection->response['code'] != 200) {
                           error_log("Twitter error:".$writeconnection->pr(htmlentities($writeconnection->response['response'])));
@@ -387,8 +394,11 @@ class Event
 
                     	$oMsg->addApiKey($prowl['prowlkey']);
 
-                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
-                        if($test){
+                        $feedData = $feed->get($row['eventfeed']);
+                        
+                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
+                        
+			if($test){
                             $message = 'TEST - '.$message;
                         }
                     	$oMsg->setEvent($message);
@@ -414,7 +424,10 @@ class Event
 
                         $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
 
-                    	$message = htmlspecialchars(str_replace('{value}', $value, $row['message']));
+                        $feedData = $feed->get($row['eventfeed']);
+
+                    	$message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
+
                         if($test){
                             $message = 'TEST - '.$message;
                         }
