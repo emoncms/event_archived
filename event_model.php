@@ -299,7 +299,6 @@ class Event
                                                 break;
                     case 2:
                         // call url
-                        $feedData = $feed->get($row['eventfeed']);
                         $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
                         if (count($explodedUrl) > 1){
                            $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, str_replace('{feed}', $feedData->name, $explodedUrl[1])));
@@ -341,8 +340,6 @@ class Event
                             'user_secret' => $twitter['usersecret'],
                         ));
 
-                        $feedData = $feed->get($row['eventfeed']);
-                        
                         // Make the API call
                         $writeconnection->request('POST',
                             $writeconnection->url('1/statuses/update'), array('status' => $message));
@@ -366,8 +363,6 @@ class Event
 
                     	$oMsg->addApiKey($prowl['prowlkey']);
 
-                        $feedData = $feed->get($row['eventfeed']);
-                        
                     	$oMsg->setEvent($message);
 
 
@@ -390,8 +385,6 @@ class Event
                         $nmakey = $this->get_user_nma($userid);
 
                         $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
-
-                        $feedData = $feed->get($row['eventfeed']);
 
                         $priority = $row['priority'];
 
