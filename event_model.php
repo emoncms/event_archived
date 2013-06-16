@@ -227,9 +227,10 @@ class Event
 
             }
             
-        	$message = htmlspecialchars($row['message']);
+        	$message = $row['message'];
         	$message = str_replace('{feed}', $feedData->name, $message);
             $message = str_replace('{value}', $value, $message);
+        	$message = htmlspecialchars($message);
             if (empty($message)) { $message = "No message body"; }
 
             if($test){
