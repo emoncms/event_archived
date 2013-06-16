@@ -227,7 +227,7 @@ class Event
 
             }
             
-            $feedData = $feed->get($feedid);
+            $feedData = $feed->get($row['eventfeed']);
         	$message = $row['message'];
         	$message = str_replace('{feed}', $feedData->name, $message);
             $message = str_replace('{value}', $value, $message);
@@ -267,7 +267,6 @@ class Event
 
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
-                        $feedData = $feed->get($row['eventfeed']);
                         
                         $mail->Subject    = $message;
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
