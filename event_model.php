@@ -227,6 +227,7 @@ class Event
 
             }
             
+            $feedData = $feed->get($feedid);
         	$message = $row['message'];
         	$message = str_replace('{feed}', $feedData->name, $message);
             $message = str_replace('{value}', $value, $message);
