@@ -243,6 +243,17 @@ class Event
                 }
 
             }
+            
+        	$message = htmlspecialchars($message);
+        	$message = str_replace('{feed}', $feedData->name,$message);
+            $message = str_replace('{value}', $value, $row['message']);
+            if (empty($message)) { $message = "No message body"; }
+
+            if($test){
+                $message = 'TEST - '.$message;
+            }
+
+            
 
             // event type
             if ($sendAlert == 1) {
@@ -253,15 +264,6 @@ class Event
                         $smtp = $this->get_settings($userid);
 
                         $mail             = new PHPMailer();
-
-                    	$body = str_replace('{value}', $value, $row['message']);
-
-                        if (empty($body)) { $body = "No message body"; }
-                        //$body             = eregi_replace("[\]",'',$body);
-
-                        if($test){
-                            $body = 'TEST - '.$body;
-                        }
 
                         $mail->IsSMTP(); // telling the class to use SMTP
                         $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
@@ -287,12 +289,9 @@ class Event
                         $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
 
                         $mail->Subject    = $message;
-                        if($test){
-                            $mail->Subject = 'TEST - '.$mail->Subject;
-                        }
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 
-                        $mail->MsgHTML($body);
+                        $mail->MsgHTML($message);
 
                         $dest = $address;
                         if ($row['setemail'] != ''){
@@ -364,13 +363,6 @@ class Event
 
                         $feedData = $feed->get($row['eventfeed']);
                         
-                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
-
-                        if (empty($message)) { $message = "No message body"; }
-                        if($test){
-                            $message = 'TEST - '.$message;
-                        }
-
                         // Make the API call
                         $writeconnection->request('POST',
                             $writeconnection->url('1/statuses/update'), array('status' => $message));
@@ -396,11 +388,6 @@ class Event
 
                         $feedData = $feed->get($row['eventfeed']);
                         
-                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
-                        
-			if($test){
-                            $message = 'TEST - '.$message;
-                        }
                     	$oMsg->setEvent($message);
 
 
@@ -425,12 +412,6 @@ class Event
                         $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
 
                         $feedData = $feed->get($row['eventfeed']);
-
-                    	$message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
-
-                        if($test){
-                            $message = 'TEST - '.$message;
-                        }
 
                         $priority = $row['priority'];
 
