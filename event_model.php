@@ -90,23 +90,6 @@ class Event
       $this->mysqli->query("UPDATE event SET disabled = '$status' WHERE userid='$userid' and id = $id");
     }
 
-    /*
-    public function set_user_prowlkey($userid, $prowlkey, $message)
-    {
-      $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', message = '$message' WHERE userid='$userid'");
-    }
-
-    public function set_user_twitter($userid, $consumerkey,$consumersecret,$usertoken,$usersecret)
-    {
-      $this->mysqli->query("UPDATE event_settings SET consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret' WHERE userid='$userid'");
-    }
-
-    public function set_user_smtp($userid, $smtpserver, $smtpuser, $smtppassword, $smtpport)
-    {
-      $this->mysqli->query("UPDATE event_settings SET smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport' WHERE userid='$userid'");
-    }
-    */
-
     public function get_settings($userid) {
       $result = $this->mysqli->query("SELECT *  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -244,16 +227,14 @@ class Event
 
             }
             
-        	$message = htmlspecialchars($message);
+        	$message = htmlspecialchars($row['message']);
         	$message = str_replace('{feed}', $feedData->name, $message);
-            $message = str_replace('{value}', $value, $row['message']);
+            $message = str_replace('{value}', $value, $message);
             if (empty($message)) { $message = "No message body"; }
 
             if($test){
                 $message = 'TEST - '.$message;
             }
-
-            
 
             // event type
             if ($sendAlert == 1) {
@@ -286,8 +267,6 @@ class Event
 
                         $feedData = $feed->get($row['eventfeed']);
                         
-                        $message = htmlspecialchars(str_replace('{feed}', $feedData->name,(str_replace('{value}', $value, $row['message']))));
-
                         $mail->Subject    = $message;
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 
