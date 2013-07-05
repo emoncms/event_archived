@@ -353,7 +353,7 @@ class Event
                         require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlConnector.class.php';
                         require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlMessage.class.php';
                         require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlResponse.class.php';
-                        $prowl = get_user_prowl($userid);
+                        $prowl = $this->get_user_prowl($userid);
 
                         $oProwl = new ProwlConnector();
                         $oMsg 	= new ProwlMessage();
