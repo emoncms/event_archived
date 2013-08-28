@@ -14,11 +14,11 @@
 
   function event_controller()
   {
-    global $mysqli,$user, $session, $route;
+    global $mysqli,$user, $session, $route, $timestore_adminkey;
 
     global $feed;
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli);
+    $feed = new Feed($mysqli,$timestore_adminkey);
 
     require "Modules/event/event_model.php";
     $event = new Event($mysqli);
