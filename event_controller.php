@@ -29,6 +29,7 @@
       $eventfeed = intval(get('eventfeed'));
       $eventtype = intval(get('eventtype'));
       $eventvalue = floatval(get('eventvalue'));
+      $triggerdelay = intval(get('triggerdelay'));
       $action = intval(get('action'));
       $setfeed = intval(get('setfeed'));
       $setemail = get('setemail');
@@ -38,7 +39,7 @@
       $priority = get('priority');
       $message = get('message');
 
-      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$triggerdelay,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
       $result = "Event added";
     }
     if ($route->action == 'edit' && $session['write'])
@@ -47,6 +48,7 @@
       $eventfeed = intval(get('eventfeed'));
       $eventtype = intval(get('eventtype'));
       $eventvalue = floatval(get('eventvalue'));
+      $triggerdelay = intval(get('triggerdelay'));
       $action = intval(get('action'));
       $setfeed = intval(get('setfeed'));
       $setemail = get('setemail');
@@ -56,7 +58,7 @@
       $priority = get('priority');
       $message = get('message');
 
-      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$triggerdelay,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
       $result = "Event updated";
     }
 
