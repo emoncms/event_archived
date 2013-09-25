@@ -17,18 +17,18 @@
 
 <?php global $path, $feed; ?>
 
-<div style="float:right;"><a href="<?php echo $path; ?>event/settings">Event Settings</a></div>
-<h2>Event</h2>
+<div style="float:right;"><a href="<?php echo $path; ?>event/settings"><?php echo _('Event Settings'); ?></a></div>
+<h2><?php echo _('Event'); ?></h2>
 
-<p>Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.</p>
+<p><?php echo _('Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.'); ?></p>
 
 <?php if (!$event_list) { ?>
 <div class="alert alert-block">
-<h4 class="alert-heading">No event notifications created</h4>
-<p>To add an event based notification:</p>
-<p>1) Select the feed you wish to be notified about from the drop down menu</p>
-<p>2) Select whether you want to be notifed if the feed goes above, below or equals the value specified, or is inactive.</p>
-<p>3) Enter a value</p>
+<h4 class="alert-heading"><?php echo _('No event notifications created'); ?></h4>
+<p><?php echo _('To add an event based notification:'); ?></p>
+<p><?php echo _('1) Select the feed you wish to be notified about from the drop down menu'); ?></p>
+<p><?php echo _('2) Select whether you want to be notifed if the feed goes above, below or equals the value specified, or is inactive.'); ?></p>
+<p><?php echo _('3) Enter a value'); ?></p>
 </div>
 <?php } else { ?>
 <table class="table table-hover" style="">
@@ -43,11 +43,11 @@
     if ($item['eventtype']==0) echo ">";
     if ($item['eventtype']==1) echo "<";
     if ($item['eventtype']==2) echo "==";
-    if ($item['eventtype']==3) echo "inactive";
-    if ($item['eventtype']==4) echo "updated";
-    if ($item['eventtype']==5) echo "inc by";
-    if ($item['eventtype']==6) echo "dec by";
-    if ($item['eventtype']==7) echo "manual update";
+    if ($item['eventtype']==3) echo _("inactive");
+    if ($item['eventtype']==4) echo _("updated");
+    if ($item['eventtype']==5) echo _("inc by");
+    if ($item['eventtype']==6) echo _("dec by");
+    if ($item['eventtype']==7) echo _("manual update");
     ?></td>
     <td><?php echo $item['eventvalue']; ?></td>
     <td>
@@ -74,12 +74,12 @@
     <td>
 
     <?php
-    if ($item['action']==0) echo "email";
-    if ($item['action']==1) echo "feed";
-    if ($item['action']==2) echo "curl";
-    if ($item['action']==3) echo "tweet";
-    if ($item['action']==4) echo "prowl";
-    if ($item['action']==5) echo "nma";
+    if ($item['action']==0) echo _("email");
+    if ($item['action']==1) echo _("feed");
+    if ($item['action']==2) echo _("curl");
+    if ($item['action']==3) echo _("tweet");
+    if ($item['action']==4) echo _("prowl");
+    if ($item['action']==5) echo _("nma");
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
@@ -88,7 +88,7 @@
 
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
     <td><?php echo $item['message']; ?> </td>
-    <td><?php echo $item['mutetime']; ?> secs</td>
+    <td><?php echo $item['mutetime']; ?> <?php echo _('secs'); ?></td>
    <td><div class="editevent btn"
             eventid="<?php echo $item['id']; ?>"
             eventtype="<?php echo $item['eventtype']; ?>"
@@ -102,19 +102,19 @@
             message="<?php echo $item['message']; ?>"
             mutetime="<?php echo $item['mutetime']; ?>"
 
-        >Edit</div></td>
+        ><?php echo _('Edit'); ?></div></td>
 
-    <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" >Delete</div></td>
+    <td><div class="deleteevent btn" eventid="<?php echo $item['id']; ?>" ><?php echo _('Delete'); ?></div></td>
     <?php
     if($item['disabled'] != 1){ ?>
-    <td><div class="disableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Disable</div></td>
+    <td><div class="disableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" ><?php echo _('Disable'); ?></div></td>
     <?php
     }else{ ?>
-    <td><div class="enableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Enable</div></td>
+    <td><div class="enableevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" ><?php echo _('Enable'); ?></div></td>
 
     <?php
     } ?>
-    <td><div class="testevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" >Test</div></td>
+    <td><div class="testevent btn" eventid="<?php echo $item['id']; ?>" feedid="<?php echo $item['eventfeed']; ?>" ><?php echo _('Test'); ?></div></td>
   </tr>
   <?php } ?>
 </table>
@@ -125,7 +125,7 @@
 <form id="eventform" action="event/add" method="get" onsubmit="return false;">
   <div style=" background-color:#eee; margin-bottom:10px; border: 1px solid #ddd">
     <div style="padding:10px;  border-top: 1px solid #fff; ">
-      <div style="float:left; padding-top:2px; font-weight:bold;">IF</div>
+      <div style="float:left; padding-top:2px; font-weight:bold;"><?php echo _('IF'); ?></div>
 
       <div style="float:right;">
       <select id="eventfeed" name="eventfeed" style="width:160px; margin:0px;">
@@ -133,16 +133,16 @@
       <option value="<?php echo $feed['id']; ?>"><?php echo $feed['name']; ?></option>
       <?php } ?>
       </select>
-      <span style="font-weight:bold;" >is</span>
+      <span style="font-weight:bold;" ><?php echo _('is'); ?></span>
       <select id="eventtype" name="eventtype" style="width:100px; margin:0px;">
-          <option value="0" >more than</option>
-          <option value="5" >increases by</option>
-          <option value="1" >less than</option>
-          <option value="6" >reduces by</option>
-          <option value="2" >equal to</option>
-          <option value="3" >inactive</option>
-          <option value="4" >is updated</option>
-          <option value="7" >manual update</option>
+          <option value="0" ><?php echo _('more than'); ?></option>
+          <option value="5" ><?php echo _('increases by'); ?></option>
+          <option value="1" ><?php echo _('less than'); ?></option>
+          <option value="6" ><?php echo _('reduces by'); ?></option>
+          <option value="2" ><?php echo _('equal to'); ?></option>
+          <option value="3" ><?php echo _('inactive'); ?></option>
+          <option value="4" ><?php echo _('is updated'); ?></option>
+          <option value="7" ><?php echo _('manual update'); ?></option>
       </select>
       <input id="eventid" name="eventid" type="text" hidden="true" style="display:none" />
       <span id="not-inactive">
@@ -152,12 +152,12 @@
       <span style="font-weight:bold;" >: </span>
 
       <select id="action" name="action" style="width:100px; margin:0px;">
-          <option value="0" >send email</option>
-          <option value="1" >set feed</option>
-          <option value="2" >call url</option>
-          <option value="3" >tweet</option>
-          <option value="4" >send prowl</option>
-          <option value="5" >send nma</option>
+          <option value="0" ><?php echo _('send email'); ?></option>
+          <option value="1" ><?php echo _('set feed'); ?></option>
+          <option value="2" ><?php echo _('call url'); ?></option>
+          <option value="3" ><?php echo _('tweet'); ?></option>
+          <option value="4" ><?php echo _('send prowl'); ?></option>
+          <option value="5" ><?php echo _('send nma'); ?></option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -172,21 +172,21 @@
           </select>
       </span>
 
-      <span id="not-value" style="font-weight:bold;" >to
+      <span id="not-value" style="font-weight:bold;" ><?php echo _('to'); ?>
           <input id="setvalue" name="setvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
-      <span id="not-message" style="font-weight:bold;" > message
+      <span id="not-message" style="font-weight:bold;" > <?php echo _('message'); ?>
           <input id="message" name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
-      <span id="not-priority" style="font-weight:bold;" > priority
+      <span id="not-priority" style="font-weight:bold;" > <?php echo _('priority'); ?>
           <select id="action-priority" name="priority" style="width:100px; margin:0px;">
-              <option value="-2">Very Low</option>
-              <option value="-1">Moderate</option>
-              <option value="0">Normal</option>
-              <option value="1">High</option>
-              <option value="2">Emergency</option>
+              <option value="-2"><?php echo _('Very Low'); ?></option>
+              <option value="-1"><?php echo _('Moderate'); ?></option>
+              <option value="0"><?php echo _('Normal'); ?></option>
+              <option value="1"><?php echo _('High'); ?></option>
+              <option value="2"><?php echo _('Emergency'); ?></option>
           </select>
       </span>
 
@@ -196,23 +196,23 @@
       </span>
 
       <select id="mutetime" name="mutetime" style="width:100px; margin:0px;">
-          <option value="0">No mute</option>
-          <option value="5">5 secs</option>
-          <option value="15">15 secs</option>
-          <option value="30">30 secs</option>
-          <option value="60">1 min</option>
-          <option value="300">5 min</option>
-          <option value="600">10 min</option>
-          <option value="1800">30 min</option>
-          <option value="3600">1 hour</option>
-          <option value="14400">3 hour</option>
-          <option value="28800">6 hour</option>
-          <option value="57600">12 hour</option>
-          <option value="86400">24 hour</option>
+          <option value="0"><?php echo _('No mute'); ?></option>
+          <option value="5"><?php echo _('5 secs'); ?></option>
+          <option value="15"><?php echo _('15 secs'); ?></option>
+          <option value="30"><?php echo _('30 secs'); ?></option>
+          <option value="60"><?php echo _('1 min'); ?></option>
+          <option value="300"><?php echo _('5 min'); ?></option>
+          <option value="600"><?php echo _('10 min'); ?></option>
+          <option value="1800"><?php echo _('30 min'); ?></option>
+          <option value="3600"><?php echo _('1 hour'); ?></option>
+          <option value="14400"><?php echo _('3 hour'); ?></option>
+          <option value="28800"><?php echo _('6 hour'); ?></option>
+          <option value="57600"><?php echo _('12 hour'); ?></option>
+          <option value="86400"><?php echo _('24 hour'); ?></option>
       </select>
 
-      <div id="addevent" class="btn btn-info" >Add</div>
-      <div id="editeventbtn" class="btn btn-info" >Edit</div>
+      <div id="addevent" class="btn btn-info" ><?php echo _('Add'); ?></div>
+      <div id="editeventbtn" class="btn btn-info" ><?php echo _('Edit'); ?></div>
       </div>
       <div style="clear:both"></div>
     </div>

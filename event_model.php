@@ -232,10 +232,10 @@ class Event
         	$message = str_replace('{feed}', $feedData->name, $message);
             $message = str_replace('{value}', $value, $message);
         	$message = htmlspecialchars($message);
-            if (empty($message)) { $message = "No message body"; }
+            if (empty($message)) { $message = _("No message body"); }
 
             if($test){
-                $message = 'TEST - '.$message;
+                $message = _('TEST - ').$message;
             }
 
             // event type
@@ -313,11 +313,11 @@ class Event
 
                         // grab URL and pass it to the browser
                         if(curl_exec($ch) === false){
-                            error_log("Curl Error:".curl_error($ch));
+                            error_log(_("Curl Error:").curl_error($ch));
                         }
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-		                error_log("Curl Log:".$body);
+		                error_log(_("Curl Log:").$body);
 
 
                         break;
@@ -345,7 +345,7 @@ class Event
                             $writeconnection->url('1/statuses/update'), array('status' => $message));
 
                         if ($writeconnection->response['code'] != 200) {
-                          error_log("Twitter error:".$writeconnection->pr(htmlentities($writeconnection->response['response'])));
+                          error_log(_("Twitter error:").$writeconnection->pr(htmlentities($writeconnection->response['response'])));
                         }
                         break;
                     case 4:
@@ -367,7 +367,7 @@ class Event
 
 
                     	// These are optional:
-                    	$message = 'event at '.date("Y-m-d H:i:s",time());
+                    	$message = _('event at ').date("Y-m-d H:i:s",time());
                     	$oMsg->setDescription($message);
                     	$oMsg->setApplication('emoncms');
 

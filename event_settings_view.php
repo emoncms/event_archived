@@ -1,7 +1,7 @@
 
 <?php global $user,$session; ?>
 
-<h2>Event settings</h2>
+<h2><?php echo _('Event settings'); ?></h2>
 
 <form action="savesettings" method="post">
 
@@ -27,8 +27,8 @@
     <br>    
 
     <select name="smtpport">
-        <option <?php if ($settings['smtpport'] == '25') { echo "selected"; }?>  value="25">25 (No SSL)</option>
-        <option <?php if ($settings['smtpport'] == '465') { echo "selected"; }?> value="465">465 (SSL)</option>    
+        <option <?php if ($settings['smtpport'] == '25') { echo "selected"; }?>  value="25"><?php echo _('25 (No SSL)'); ?></option>
+        <option <?php if ($settings['smtpport'] == '465') { echo "selected"; }?> value="465"><?php echo _('465 (SSL)'); ?></option>    
     </select>
     <br>
 
