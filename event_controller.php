@@ -39,7 +39,7 @@
       $message = get('message');
 
       $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
-      $result = "Event added";
+      $result = _("Event added");
     }
     if ($route->action == 'edit' && $session['write'])
     {
@@ -57,7 +57,7 @@
       $message = get('message');
 
       $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
-      $result = "Event updated";
+      $result = _("Event updated");
     }
 
 
@@ -65,14 +65,14 @@
     {
       $id = intval(get('id'));
       $event->delete($userid,$id);
-      $result = "Event deleted";
+      $result = _("Event deleted");
     }
     else if ($route->action == 'status' && $session['write'])
     {
       $id = intval(get('id'));
       $status = intval(get('status'));
       $event->set_status($userid,$id,$status);
-      $result = "Event deleted";
+      $result = _("Event deleted");
     }
 
     else if ($route->action == 'test' && $session['write'])
@@ -80,7 +80,7 @@
       $id = intval(get('id'));
       $feedid = intval(get('feedid'));
       $event->test($userid,$id,$feedid);
-      $result = "Event Test Sent";
+      $result = _("Event Test Sent");
     }
 
     else if ($route->action == 'settings' && $session['write'])
