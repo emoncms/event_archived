@@ -323,30 +323,30 @@ class Event
                         break;
                     case 3:
                         // Twitter
-                        require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/oAuth/tmhOAuth.php');
-                        $twitter = get_user_twitter($userid);
+                        require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/twitter-api-php/TwitterAPIExchange.php');
+                        $twitter = $this->get_user_twitter($userid);
 
-                        // Set the authorization values
-                        // In keeping with the OAuth tradition of maximum confusion,
-                        // the names of some of these values are different from the Twitter Dev interface
-                        // user_token is called Access Token on the Dev site
-                        // user_secret is called Access Token Secret on the Dev site
-                        // The values here have asterisks to hide the true contents
-                        // You need to use the actual values from Twitter
-                        $writeconnection = new tmhOAuth(array(
+                        // Twitter disallow duplicate tweets within an unspecified and variable time per account
+                        // so add the feed time to make each tweet unique.
+                        $message = $message.' at '.date("H:i:s", $feedtime);;
+
+                        // Set the OAauth values
+                        $settings = array(
+                            'oauth_access_token' => $twitter['usertoken'],
+                            'oauth_access_token_secret' => $twitter['usersecret'],
                             'consumer_key' => $twitter['consumerkey'],
-                            'consumer_secret' => $twitter['consumersecret'],
-                            'user_token' => $twitter['usertoken'],
-                            'user_secret' => $twitter['usersecret'],
-                        ));
+                            'consumer_secret' => $twitter['consumersecret']
+                        );
 
                         // Make the API call
-                        $writeconnection->request('POST',
-                            $writeconnection->url('1/statuses/update'), array('status' => $message));
-
-                        if ($writeconnection->response['code'] != 200) {
-                          error_log("Twitter error:".$writeconnection->pr(htmlentities($writeconnection->response['response'])));
-                        }
+                        $url = 'https://api.twitter.com/1.1/statuses/update.json';
+                        $requestMethod = 'POST';
+                        $postfields = array(
+                            'status' => $message );
+                        $tweet = new TwitterAPIExchange($settings);
+                        echo $tweet->buildOauth($url, $requestMethod)
+                                     ->setPostfields($postfields)
+                                     ->performRequest();
                         break;
                     case 4:
                         // Prowl
