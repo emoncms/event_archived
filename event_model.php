@@ -128,7 +128,7 @@ class Event
           $t = time();
           $f = $feed->get($feedid);
           if($f){
-            $this->check_feed_event($id,$t,$t,$f->value,null,true);
+            $this->check_feed_event($id,$t,$t,$f['value'],null,true);
         }else{
             return("Wrong input parameters");
         }
@@ -186,7 +186,7 @@ class Event
                         //if (((time()-$row['lasttime'])/3600)>24) {}
                         $feedData = $feed->get($row['eventfeed']);
                         //error_log("Feeddata: " .$feedData->time);
-                        $t = time()- strtotime($feedData->time);
+                        $t = time()- strtotime($feedData['time']);
                         //error_log("t: " .$t);
                         if ($t > $row['eventvalue']){
                            $sendAlert = 1;
@@ -222,7 +222,7 @@ class Event
                         // manual update
                         // Check if event.lasttime is less than feed.time
                         $feedData = $feed->get($feedid);
-                        if ($feedData->time > $row['lasttime']){
+                        if ($feedData['time'] > $row['lasttime']){
                            $sendAlert = 1;
                         }
                 }
@@ -231,7 +231,7 @@ class Event
             
             $feedData = $feed->get($row['eventfeed']);
         	$message = $row['message'];
-        	$message = str_replace('{feed}', $feedData->name, $message);
+        	$message = str_replace('{feed}', $feedData['name'], $message);
             $message = str_replace('{value}', $value, $message);
         	$message = htmlspecialchars($message);
             if (empty($message)) { $message = "No message body"; }
