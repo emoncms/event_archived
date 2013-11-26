@@ -15,10 +15,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class Event
 {
     private $mysqli;
-
-    public function __construct($mysqli)
+    private $redis;
+    
+    public function __construct($mysqli,$redis)
     {
         $this->mysqli = $mysqli;
+        $this->redis = $redis;
     }
 
     /*
@@ -295,7 +297,9 @@ class Event
                         // set feed
                         $setfeed = $row['setfeed'];
                         $setvalue = $row['setvalue'];
-                        $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
+                        
+                        $this->redis->hMset("feed:lastvalue:$setfeed", array('value' => $setvalue, 'time' => $updatetime));
+                        // $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
                                                 break;
                     case 2:
                         // call url

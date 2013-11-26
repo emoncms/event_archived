@@ -14,14 +14,14 @@
 
   function event_controller()
   {
-    global $mysqli,$user, $session, $route, $timestore_adminkey;
+    global $mysqli,$redis,$user, $session, $route, $timestore_adminkey;
 
     global $feed;
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$timestore_adminkey);
+    $feed = new Feed($mysqli,$redis,$timestore_adminkey);
 
     require "Modules/event/event_model.php";
-    $event = new Event($mysqli);
+    $event = new Event($mysqli,$redis);
 
     $userid = $session['userid'];
     if ($route->action == 'add' && $session['write'])
