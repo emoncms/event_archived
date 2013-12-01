@@ -19,6 +19,8 @@ $schema['event'] = array(
   'userid' => array('type' => 'int(11)'),
   'eventfeed' => array('type' => 'int(11)'),
   'eventtype' => array('type' => 'int(11)'),
+  'triggerdelay' => array('type' => 'int(11)'),
+  'lastuntriggeredtime' => array('type' => 'int(11)'),
   'eventvalue' => array('type' => 'float'),
   'action' => array('type' => 'int(11)'),
   'setfeed' => array('type' => 'int(11)'),

@@ -33,9 +33,9 @@ class Event
       $this->mysqli->query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
     }
 
-    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
+    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$triggerdelay,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
     {
-      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message' WHERE `userid` = '$userid' AND `id` = '$id' ";
+      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed,  eventtype = $eventtype, eventvalue = $eventvalue, triggerdelay = $triggerdelay, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message' WHERE `userid` = '$userid' AND `id` = '$id' ";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -43,9 +43,9 @@ class Event
       }
     }
 
-    public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
+    public function add($userid,$eventfeed,$eventtype,$eventvalue,$triggerdelay,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
     {
-      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
+      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `triggerdelay`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$triggerdelay','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -154,28 +154,30 @@ class Event
             if ($row['lasttime']+$row['mutetime'] > time() && !$test) {
                 continue;
             }
+
             if ($test){
                $sendAlert = 1;
             }else{
                 $sendAlert = 0;
+                $conditionTrue = 0;
 
                 switch($row['eventtype']) {
                     case 0:
                         // more than
                         if ($value > $row['eventvalue']) {
-                            $sendAlert = 1;
+                           $conditionTrue = 1; 
                         }
                         break;
                     case 1:
                         // less than
                         if ($value < $row['eventvalue']) {
-                            $sendAlert = 1;
+                            $conditionTrue = 1;
                         }
                         break;
                     case 2:
                         // equal to
                         if ($value == $row['eventvalue']) {
-                            $sendAlert = 1;
+                            $conditionTrue = 1;
                         }
                         break;
                     case 3:
@@ -187,12 +189,12 @@ class Event
                         $t = time()- strtotime($feedData->time);
                         //error_log("t: " .$t);
                         if ($t > $row['eventvalue']){
-                           $sendAlert = 1;
+                           $conditionTrue = 1;
                         }
                         break;
                     case 4:
                         // updated
-                        $sendAlert = 1;
+                        $conditionTrue = 1;
                         break;
                     case 5:
                         // increased by
@@ -201,7 +203,7 @@ class Event
                         $rowprev = $resultprev->fetch_array();
                         //echo "INC == ".$value." > ".$rowprev['data']."+".$row['eventvalue'];
                         if ($value > ($rowprev['data']+$row['eventvalue'])) {
-                            $sendAlert = 1;
+                            $conditionTrue = 1;
                             }
                         break;
                     case 6:
@@ -213,7 +215,7 @@ class Event
 
                         //echo "DEC == ".$value."<". $rowprev['data']."-".$row['eventvalue'];
                         if ($value < ($rowprev['data']-$row['eventvalue'])) {
-                            $sendAlert = 1;
+                            $conditionTrue = 1;
                             }
                         break;
                     case 7:
@@ -221,12 +223,21 @@ class Event
                         // Check if event.lasttime is less than feed.time
                         $feedData = $feed->get($feedid);
                         if ($feedData->time > $row['lasttime']){
-                           $sendAlert = 1;
+                           $conditionTrue = 1;
                         }
-                }
+                } //switch end
 
+		// calculate trigger delay
+                if ($conditionTrue && (time()-$row['lastuntriggeredtime'] > $row['triggerdelay']) ) {
+			// condition has been triggered for  longer than triggerdelay
+			$sendAlert = 1;
+                }
+		if (!$conditionTrue) {
+			// store the last time stamp where condition was false
+			$this->mysqli->query("UPDATE event SET `lastuntriggeredtime` = '".time()."' WHERE `userid` = '".$row['userid']."' AND `id` = '".$row['id']."'");
+		}
             }
-            
+
             $feedData = $feed->get($row['eventfeed']);
         	$message = $row['message'];
         	$message = str_replace('{feed}', $feedData->name, $message);
@@ -239,7 +250,7 @@ class Event
             }
 
             // event type
-            if ($sendAlert == 1) {
+            if ($sendAlert) {
                 switch($row['action']) {
                     case 0:
                         // email
@@ -267,7 +278,6 @@ class Event
 
                         //$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
-                        
                         $mail->Subject    = $message;
                         //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 

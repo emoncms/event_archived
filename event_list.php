@@ -50,6 +50,7 @@
     if ($item['eventtype']==7) echo "manual update";
     ?></td>
     <td><?php echo $item['eventvalue']; ?></td>
+    <td><?php echo $item['triggerdelay']; ?> secs</td>
     <td>
     <?php
     $state = false;
@@ -89,10 +90,12 @@
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
     <td><?php echo $item['message']; ?> </td>
     <td><?php echo $item['mutetime']; ?> secs</td>
-   <td><div class="editevent btn"
+
+    <td><div class="editevent btn"
             eventid="<?php echo $item['id']; ?>"
             eventtype="<?php echo $item['eventtype']; ?>"
             eventvalue="<?php echo $item['eventvalue']; ?>"
+            triggerdelay="<?php echo $item['triggerdelay']; ?>"
             action="<?php echo $item['action']; ?>"
             setvalue="<?php echo $item['setvalue']; ?>"
             setemail="<?php echo $item['setemail']; ?>"
@@ -101,6 +104,7 @@
             callcurl="<?php echo $item['callcurl']; ?>"
             message="<?php echo $item['message']; ?>"
             mutetime="<?php echo $item['mutetime']; ?>"
+            priority="<?php echo $item['priority']; ?>"
 
         >Edit</div></td>
 
@@ -149,6 +153,24 @@
           <input id="eventvalue" name="eventvalue" type="text" style="width:60px; margin:0px;" />
       </span>
 
+      <span style="font-weight:bold;" >for</span>
+
+      <select id="triggerdelay" name="triggerdelay" style="width:100px; margin:0px;">
+          <option value="0">0 secs</option>
+          <option value="5">5 secs</option>
+          <option value="15">15 secs</option>
+          <option value="30">30 secs</option>
+          <option value="60">1 min</option>
+          <option value="300">5 min</option>
+          <option value="600">10 min</option>
+          <option value="1800">30 min</option>
+          <option value="3600">1 hour</option>
+          <option value="14400">3 hour</option>
+          <option value="28800">6 hour</option>
+          <option value="57600">12 hour</option>
+          <option value="86400">24 hour</option>
+      </select>
+
       <span style="font-weight:bold;" >: </span>
 
       <select id="action" name="action" style="width:100px; margin:0px;">
@@ -180,7 +202,7 @@
           <input id="message" name="message" type="text" style="width:180px; margin:0px;" value="Feed is {value}"/>
       </span>
 
-      <span id="not-priority" style="font-weight:bold;" > priority
+      <span id="priority" style="font-weight:bold;" > priority
           <select id="action-priority" name="priority" style="width:100px; margin:0px;">
               <option value="-2">Very Low</option>
               <option value="-1">Moderate</option>
@@ -270,9 +292,11 @@
     $("#setvalue").val($(this).attr("setvalue"));
     $("#setemail").val($(this).attr("setemail"));
     $("#callcurl").val($(this).attr("callcurl"));
+    $("#triggerdelay").val($(this).attr("triggerdelay"));
     $("#action").val($(this).attr("action"));
     $("#message").val($(this).attr("message"));
     $("#mutetime").val($(this).attr("mutetime"));
+    $("#priority").val($(this).attr("priority"));
     $("#eventtype").change();
     $("#action").change();
     return false;
