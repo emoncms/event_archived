@@ -73,7 +73,7 @@ class Event
 
 
     // Set all event settings in one save
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
+    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$pushoveruserkey,$pushovertoken)
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -84,7 +84,7 @@ class Event
       }
       else
       {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
+        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey', pushoveruserkey = '$pushoveruserkey', pushovertoken = '$pushovertoken' WHERE userid='$userid'");
       }
     }
     public function set_status($userid, $id, $status)
@@ -118,6 +118,12 @@ class Event
 
     public function get_user_nma($userid) {
       $result = $this->mysqli->query("SELECT nmakey FROM event_settings WHERE `userid` = '$userid'");
+      $row = $result->fetch_array();
+      return $row;
+    }
+
+    public function get_user_pushover($userid) {
+      $result = $this->mysqli->query("SELECT pushoveruserkey, pushovertoken FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
       return $row;
     }
@@ -396,12 +402,19 @@ class Event
 
                         break;
         	     case 6:
+			// Pushover.net	
+			$pushover = $this->get_user_pushover($userid);	
+
                         curl_setopt_array($ch = curl_init(), array(
                            CURLOPT_URL => "https://api.pushover.net/1/messages.json",
                            CURLOPT_POSTFIELDS => array(
-                             "token" => "XXXXXXX",
-                             "user" => "XXXXXXXX",
+                             "token" => $pushover['pushovertoken'],
+                             "user" => $pushover['pushoveruserkey'],
                              "message" => $message,
+			     "time" => time(),
+			     "sound" => "cashregister",
+			     "title" => "EmonCMS Alert",
+			     "priority" => $row['priority'],
                         )));
                         // grab URL and pass it to the browser
                         if(curl_exec($ch) === false){
