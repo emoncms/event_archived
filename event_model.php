@@ -230,13 +230,15 @@ class Event
             }
             
             $feedData = $feed->get($row['eventfeed']);
-        	$message = $row['message'];
-        	$message = str_replace('{feed}', $feedData['name'], $message);
+            $message = $row['message'];
+            $message = str_replace('{feed}', $feedData['name'], $message);
             $message = str_replace('{value}', $value, $message);
-        	$message = htmlspecialchars($message);
-            if (empty($message)) { $message = "No message body"; }
+            $message = htmlspecialchars($message);
+            if (empty($message)) { 
+            	$message = "No message body"; 
+            }
 
-            if($test){
+            if($test) {
                 $message = 'TEST - '.$message;
             }
 
@@ -300,7 +302,7 @@ class Event
                         
                         $this->redis->hMset("feed:lastvalue:$setfeed", array('value' => $setvalue, 'time' => $updatetime));
                         // $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
-                                                break;
+                        break;
                     case 2:
                         // call url
                         $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
@@ -321,8 +323,7 @@ class Event
                         }
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-		                error_log("Curl Log:".$body);
-
+		        error_log("Curl Log:".$body);
 
                         break;
                     case 3:
@@ -364,11 +365,8 @@ class Event
 
                     	$oProwl->setIsPostRequest(true);
                     	$oMsg->setPriority($row['priority']);
-
                     	$oMsg->addApiKey($prowl['prowlkey']);
-
                     	$oMsg->setEvent($message);
-
 
                     	// These are optional:
                     	$message = 'event at '.date("Y-m-d H:i:s",time());
@@ -377,8 +375,8 @@ class Event
 
                     	$oResponse = $oProwl->push($oMsg);
 
-                		if ($oResponse->isError()) {
-                            	error_log("Prowl error:".$oResponse->getErrorAsString());
+                	if ($oResponse->isError()) {
+                            error_log("Prowl error:".$oResponse->getErrorAsString());
                         }
 
                         break;
@@ -396,7 +394,23 @@ class Event
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }
 
-
+                        break;
+        	     case 6:
+                        curl_setopt_array($ch = curl_init(), array(
+                           CURLOPT_URL => "https://api.pushover.net/1/messages.json",
+                           CURLOPT_POSTFIELDS => array(
+                             "token" => "XXXXXXX",
+                             "user" => "XXXXXXXX",
+                             "message" => $message,
+                        )));
+                        // grab URL and pass it to the browser
+                        if(curl_exec($ch) === false){
+                           error_log("Pushover Curl Error:".curl_error($ch));
+                        }
+                        // close cURL resource, and free up system resources
+                        curl_close($ch);
+                        error_log("Pushover Curl Log:".$body);
+                         
                         break;
                 }
             // update the lasttime called
