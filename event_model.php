@@ -405,6 +405,9 @@ class Event
 			// Pushover.net	
 			$pushover = $this->get_user_pushover($userid);	
 
+			//error_log("User Key:".$pushover['pushoveruserkey']);
+			//error_log("Token:".$pushover['pushovertoken']);	
+
                         curl_setopt_array($ch = curl_init(), array(
                            CURLOPT_URL => "https://api.pushover.net/1/messages.json",
                            CURLOPT_POSTFIELDS => array(
@@ -414,7 +417,6 @@ class Event
 			     "time" => time(),
 			     "sound" => "cashregister",
 			     "title" => "EmonCMS Alert",
-			     "priority" => $row['priority'],
                         )));
                         // grab URL and pass it to the browser
                         if(curl_exec($ch) === false){
@@ -422,7 +424,7 @@ class Event
                         }
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-                        error_log("Pushover Curl Log:".$body);
+                        error_log("Pushover Curl Log:".$message);
                          
                         break;
                 }
