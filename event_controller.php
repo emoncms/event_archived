@@ -99,6 +99,8 @@
 
       $prowlkey = post('prowlkey');
       $nmakey = post('nmakey');
+      $pushoveruserkey = post('pushoveruserkey');
+      $pushovertoken = post('pushovertoken');
 
       $smtpserver = post('smtpserver');
       $smtpuser = post('smtpuser');
@@ -112,7 +114,7 @@
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
 
-      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey);
+      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$pushoveruserkey,$pushovertoken);
     }
 
     else if ($session['write'])

@@ -80,6 +80,7 @@
     if ($item['action']==3) echo "tweet";
     if ($item['action']==4) echo "prowl";
     if ($item['action']==5) echo "nma";
+    if ($item['action']==6) echo "pushover";
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
@@ -158,6 +159,7 @@
           <option value="3" >tweet</option>
           <option value="4" >send prowl</option>
           <option value="5" >send nma</option>
+          <option value="6" >send pushover</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -297,6 +299,7 @@
     if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
     if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
     if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
+    if ($(this).val() == 6) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
 
   });
 

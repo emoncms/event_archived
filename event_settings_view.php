@@ -65,6 +65,18 @@
 
   </div>
 
+  <div class="span4">
+
+    <h3><?php echo _('Pushover settings'); ?></h3>
+    <label><?php echo _('User Key:'); ?></label>
+    <input type="text" name="pushoveruserkey" value="<?php echo $settings['pushoveruserkey']; ?>" />
+    <label><?php echo _('API Token:'); ?></label>
+    <input type="text" name="pushovertoken" value="<?php echo $settings['pushovertoken']; ?>" />
+    <br>
+
+  </div>
+
+
 </div>
 
     <input type="submit" class="btn btn-danger" value="<?php echo _('Change'); ?>" />

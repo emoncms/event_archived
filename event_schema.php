@@ -11,7 +11,9 @@ $schema['event_settings'] = array(
   'usertoken' => array('type' => 'varchar(60)'),
   'usersecret' => array('type' => 'varchar(60)'),
   'prowlkey' => array('type' => 'varchar(60)'),
-  'nmakey' => array('type' => 'varchar(60)')
+  'nmakey' => array('type' => 'varchar(60)'),
+  'pushoveruserkey' => array('type' => 'varchar(60)'),
+  'pushovertoken' => array('type' => 'varchar(60)')
 );
 
 $schema['event'] = array(

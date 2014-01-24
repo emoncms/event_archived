@@ -73,7 +73,7 @@ class Event
 
 
     // Set all event settings in one save
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
+    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$pushoveruserkey,$pushovertoken)
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -84,7 +84,7 @@ class Event
       }
       else
       {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
+        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey', pushoveruserkey = '$pushoveruserkey', pushovertoken = '$pushovertoken' WHERE userid='$userid'");
       }
     }
     public function set_status($userid, $id, $status)
@@ -118,6 +118,12 @@ class Event
 
     public function get_user_nma($userid) {
       $result = $this->mysqli->query("SELECT nmakey FROM event_settings WHERE `userid` = '$userid'");
+      $row = $result->fetch_array();
+      return $row;
+    }
+
+    public function get_user_pushover($userid) {
+      $result = $this->mysqli->query("SELECT pushoveruserkey, pushovertoken FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
       return $row;
     }
@@ -230,13 +236,15 @@ class Event
             }
             
             $feedData = $feed->get($row['eventfeed']);
-        	$message = $row['message'];
-        	$message = str_replace('{feed}', $feedData['name'], $message);
+            $message = $row['message'];
+            $message = str_replace('{feed}', $feedData['name'], $message);
             $message = str_replace('{value}', $value, $message);
-        	$message = htmlspecialchars($message);
-            if (empty($message)) { $message = "No message body"; }
+            $message = htmlspecialchars($message);
+            if (empty($message)) { 
+            	$message = "No message body"; 
+            }
 
-            if($test){
+            if($test) {
                 $message = 'TEST - '.$message;
             }
 
@@ -300,7 +308,7 @@ class Event
                         
                         $this->redis->hMset("feed:lastvalue:$setfeed", array('value' => $setvalue, 'time' => $updatetime));
                         // $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
-                                                break;
+                        break;
                     case 2:
                         // call url
                         $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
@@ -321,8 +329,7 @@ class Event
                         }
                         // close cURL resource, and free up system resources
                         curl_close($ch);
-		                error_log("Curl Log:".$body);
-
+		        error_log("Curl Log:".$body);
 
                         break;
                     case 3:
@@ -364,11 +371,8 @@ class Event
 
                     	$oProwl->setIsPostRequest(true);
                     	$oMsg->setPriority($row['priority']);
-
                     	$oMsg->addApiKey($prowl['prowlkey']);
-
                     	$oMsg->setEvent($message);
-
 
                     	// These are optional:
                     	$message = 'event at '.date("Y-m-d H:i:s",time());
@@ -377,8 +381,8 @@ class Event
 
                     	$oResponse = $oProwl->push($oMsg);
 
-                		if ($oResponse->isError()) {
-                            	error_log("Prowl error:".$oResponse->getErrorAsString());
+                	if ($oResponse->isError()) {
+                            error_log("Prowl error:".$oResponse->getErrorAsString());
                         }
 
                         break;
@@ -396,7 +400,32 @@ class Event
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }
 
+                        break;
+        	     case 6:
+			// Pushover.net	
+			$pushover = $this->get_user_pushover($userid);	
 
+			//error_log("User Key:".$pushover['pushoveruserkey']);
+			//error_log("Token:".$pushover['pushovertoken']);	
+
+                        curl_setopt_array($ch = curl_init(), array(
+                           CURLOPT_URL => "https://api.pushover.net/1/messages.json",
+                           CURLOPT_POSTFIELDS => array(
+                             "token" => $pushover['pushovertoken'],
+                             "user" => $pushover['pushoveruserkey'],
+                             "message" => $message,
+			     "time" => time(),
+			     "sound" => "cashregister",
+			     "title" => "EmonCMS Alert",
+                        )));
+                        // grab URL and pass it to the browser
+                        if(curl_exec($ch) === false){
+                           error_log("Pushover Curl Error:".curl_error($ch));
+                        }
+                        // close cURL resource, and free up system resources
+                        curl_close($ch);
+                        error_log("Pushover Curl Log:".$message);
+                         
                         break;
                 }
             // update the lasttime called
