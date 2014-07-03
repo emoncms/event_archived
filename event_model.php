@@ -255,7 +255,8 @@ class Event
                                                                    // 1 = errors and messages
                                                                    // 2 = messages only
                         $mail->SMTPAuth   = true;                  // enable SMTP authentication
-                        $mail->SMTPSecure = "ssl";                 // sets the prefix to the servier
+                        if ($smtp['smtpport'] == 465) 
+				{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
 
                         $mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
                         $mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
