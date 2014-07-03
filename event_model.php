@@ -279,7 +279,17 @@ class Event
                         if ($row['setemail'] != ''){
                             $dest = $row['setemail'];
                         }
-                        $mail->AddAddress($dest, "emoncms");
+                        // Allows multiple recipients for the event email. Seperate by semi-colon ;
+                        if (strpos($dest,';') !== false) {
+                            $addresses = explode(';', $dest);
+                            foreach ($addresses as &$addressee) {
+                            	$mail->AddAddress($addressee, "emoncms");
+                            }
+                        }
+                        else {
+                            $mail->AddAddress($dest, "emoncms");
+                        }
+                        
 
                         //$mail->AddAttachment("images/phpmailer.gif");      // attachment
                         //$mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
