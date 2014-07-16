@@ -64,7 +64,7 @@ class Event
     {
       $list = array();
       $result = $this->mysqli->query("SELECT * FROM event WHERE `userid` = '$userid'");
-      while ($row = $result->fetch_array())
+      while ($result && $row = $result->fetch_array())
       {
         $list[] = $row;
       }
