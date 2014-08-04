@@ -38,18 +38,16 @@
       $priority = get('priority');
       $message = get('message');
 
-<<<<<<< HEAD
 	  //Twilio added XaroRSA
 	  $fromNumber = get('fromNumber');
 	  $toNumber = get('toNumber');
 	  $premute = get('premute');
 	  
       $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,$premute);
-=======
-      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
+
       $result = "Event added";
     }
+	
     if ($route->action == 'edit' && $session['write'])
     {
       $eventid = intval(get('eventid'));
@@ -64,7 +62,6 @@
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
-<<<<<<< HEAD
 	  
 	  //Twilio added XaroRSA
 	  $fromNumber = get('fromNumber');
@@ -72,10 +69,6 @@
 	  $premute = get('premute');
 
       $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,$premute);
-=======
-
-      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
       $result = "Event updated";
     }
 
@@ -130,17 +123,12 @@
       $consumersecret = post('consumersecret');
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
-<<<<<<< HEAD
 	  
 	  //Added XaroRSA
 	  $sid = post('sid');
 	  $token = post('token');
 
       $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey, $sid, $token);
-=======
-
-      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey);
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
     }
 
     else if ($session['write'])
