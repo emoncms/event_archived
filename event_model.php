@@ -265,198 +265,219 @@ class Event
 
             // event type
             if ($sendAlert == 1) {
-                switch($row['action']) {
-                    case 0:
-                        // email
-                        require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.phpmailer.php');
-                        $smtp = $this->get_settings($userid);
+				if ($row['firstoccurence'] == 0){
+						//save time to firstTime, set firstoccurance to 1
+						$this->mysqli->query("UPDATE event SET firsttime = '".time()."' WHERE id='".$row['id']."'");
+						$this->mysqli->query("UPDATE event SET firstoccurence = '1' WHERE id='".$row['id']."'");
+						echo "First occurrence set / First Time updated<br>";
+					}
+				
+				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() ){
+					$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
+					$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
+					echo "Sending message set First occurrence and Firsttime to 0<br>";
+			
+						switch($row['action']) {
+							case 0:
+								// email
+								require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.phpmailer.php');
+								$smtp = $this->get_settings($userid);
 
-                        $mail             = new PHPMailer();
+								$mail             = new PHPMailer();
 
-                        $mail->IsSMTP(); // telling the class to use SMTP
-                        $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
-                                                                   // 1 = errors and messages
-                                                                   // 2 = messages only
-                        $mail->SMTPAuth   = true;                  // enable SMTP authentication
-                        if ($smtp['smtpport'] == 465) 
-				{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
+								$mail->IsSMTP(); // telling the class to use SMTP
+								$mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
+																		   // 1 = errors and messages
+																		   // 2 = messages only
+								$mail->SMTPAuth   = true;                  // enable SMTP authentication
+								if ($smtp['smtpport'] == 465) 
+						{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
 
-                        $mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
-                        $mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
-                        $mail->Username   = $smtp['smtpuser'];       // GMAIL username
-                        $salt = $user->get_salt($userid);
+								$mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
+								$mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
+								$mail->Username   = $smtp['smtpuser'];       // GMAIL username
+								$salt = $user->get_salt($userid);
 
-                        $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
+								$mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
 
-                        $address = $smtp['smtpuser'];
-                        $mail->SetFrom($address, 'emoncms');
+								$address = $smtp['smtpuser'];
+								$mail->SetFrom($address, 'emoncms');
 
-                        //$mail->AddReplyTo("user2@gmail.com', 'First Last");
+								//$mail->AddReplyTo("user2@gmail.com', 'First Last");
 
-                        
-                        $mail->Subject    = $message;
-                        //$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
+								
+								$mail->Subject    = $message;
+								//$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
 
-                        $mail->MsgHTML($message);
+								$mail->MsgHTML($message);
 
-                        $dest = $address;
-                        if ($row['setemail'] != ''){
-                            $dest = $row['setemail'];
-                        }
-                        // Allows multiple recipients for the event email. Seperate by semi-colon ;
-                        if (strpos($dest,';') !== false) {
-                            $addresses = explode(';', $dest);
-                            foreach ($addresses as &$addressee) {
-                            	$mail->AddAddress($addressee, "emoncms");
-                            }
-                        }
-                        else {
-                            $mail->AddAddress($dest, "emoncms");
-                        }
-                        
+								$dest = $address;
+								if ($row['setemail'] != ''){
+									$dest = $row['setemail'];
+								}
+								// Allows multiple recipients for the event email. Seperate by semi-colon ;
+								if (strpos($dest,';') !== false) {
+									$addresses = explode(';', $dest);
+									foreach ($addresses as &$addressee) {
+										$mail->AddAddress($addressee, "emoncms");
+									}
+								}
+								else {
+									$mail->AddAddress($dest, "emoncms");
+								}
+								
 
-                        //$mail->AddAttachment("images/phpmailer.gif");      // attachment
-                        //$mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
+								//$mail->AddAttachment("images/phpmailer.gif");      // attachment
+								//$mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
 
-                        if(!$mail->Send()) {
-                          echo "Mailer Error: " . $mail->ErrorInfo;
-                          error_log("Mailer Error: " . $mail->ErrorInfo);
-                        } else {
-                          echo "Message sent!";
-                          error_log("Message sent");
-                        }
+								if(!$mail->Send()) {
+								  echo "Mailer Error: " . $mail->ErrorInfo;
+								  error_log("Mailer Error: " . $mail->ErrorInfo);
+								} else {
+								  echo "Message sent!";
+								  error_log("Message sent");
+								}
 
-                        break;
-                    case 1:
-                        // set feed
-                        $setfeed = $row['setfeed'];
-                        $setvalue = $row['setvalue'];
-                        
-                        $this->redis->hMset("feed:lastvalue:$setfeed", array('value' => $setvalue, 'time' => $updatetime));
-                        // $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
-                                                break;
-                    case 2:
-                        // call url
-                        $explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
-                        if (count($explodedUrl) > 1){
-                           $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, str_replace('{feed}', $feedData->name, $explodedUrl[1])));
-                        }
-                        $ch = curl_init();
-                        $body = $explodedUrl[0] . '?' . $explodedUrl[1];
-                        // set URL and other appropriate options
-                        curl_setopt($ch, CURLOPT_URL, $body);
-                        curl_setopt($ch, CURLOPT_HEADER, 0);
-                        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-                        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+								break;
+							case 1:
+								// set feed
+								$setfeed = $row['setfeed'];
+								$setvalue = $row['setvalue'];
+								
+								$this->redis->hMset("feed:lastvalue:$setfeed", array('value' => $setvalue, 'time' => $updatetime));
+								// $this->mysqli->query("UPDATE feeds SET value = '$setvalue', time = '$updatetime' WHERE id='$setfeed'");
+														break;
+							case 2:
+								// call url
+								$explodedUrl = preg_split('/[?]+/', $row['callcurl'],-1);
+								if (count($explodedUrl) > 1){
+								   $explodedUrl[1] =  str_replace(' ', '%20', str_replace('{value}', $value, str_replace('{feed}', $feedData->name, $explodedUrl[1])));
+								}
+								$ch = curl_init();
+								$body = $explodedUrl[0] . '?' . $explodedUrl[1];
+								// set URL and other appropriate options
+								curl_setopt($ch, CURLOPT_URL, $body);
+								curl_setopt($ch, CURLOPT_HEADER, 0);
+								curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+								curl_setopt($ch, CURLOPT_TIMEOUT, 1);
 
-                        // grab URL and pass it to the browser
-                        if(curl_exec($ch) === false){
-                            error_log("Curl Error:".curl_error($ch));
-                        }
-                        // close cURL resource, and free up system resources
-                        curl_close($ch);
-		                error_log("Curl Log:".$body);
-
-
-                        break;
-                    case 3:
-                        // Twitter
-                        require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/twitter-api-php/TwitterAPIExchange.php');
-                        $twitter = $this->get_user_twitter($userid);
-
-                        // Twitter disallow duplicate tweets within an unspecified and variable time per account
-                        // so add the feed time to make each tweet unique.
-                        $message = $message.' at '.date("H:i:s", $feedtime);;
-
-                        // Set the OAauth values
-                        $settings = array(
-                            'oauth_access_token' => $twitter['usertoken'],
-                            'oauth_access_token_secret' => $twitter['usersecret'],
-                            'consumer_key' => $twitter['consumerkey'],
-                            'consumer_secret' => $twitter['consumersecret']
-                        );
-
-                        // Make the API call
-                        $url = 'https://api.twitter.com/1.1/statuses/update.json';
-                        $requestMethod = 'POST';
-                        $postfields = array(
-                            'status' => $message );
-                        $tweet = new TwitterAPIExchange($settings);
-                        echo $tweet->buildOauth($url, $requestMethod)
-                                     ->setPostfields($postfields)
-                                     ->performRequest();
-                        break;
-                    case 4:
-                        // Prowl
-                        require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlConnector.class.php';
-                        require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlMessage.class.php';
-                        require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlResponse.class.php';
-                        $prowl = $this->get_user_prowl($userid);
-
-                        $oProwl = new ProwlConnector();
-                        $oMsg 	= new ProwlMessage();
-
-                    	$oProwl->setIsPostRequest(true);
-                    	$oMsg->setPriority($row['priority']);
-
-                    	$oMsg->addApiKey($prowl['prowlkey']);
-
-                    	$oMsg->setEvent($message);
+								// grab URL and pass it to the browser
+								if(curl_exec($ch) === false){
+									error_log("Curl Error:".curl_error($ch));
+								}
+								// close cURL resource, and free up system resources
+								curl_close($ch);
+								error_log("Curl Log:".$body);
 
 
-                    	// These are optional:
-                    	$message = 'event at '.date("Y-m-d H:i:s",time());
-                    	$oMsg->setDescription($message);
-                    	$oMsg->setApplication('emoncms');
+								break;
+							case 3:
+								// Twitter
+								require_once(realpath(dirname(__FILE__)).'/../event/scripts/twitter/twitter-api-php/TwitterAPIExchange.php');
+								$twitter = $this->get_user_twitter($userid);
 
-                    	$oResponse = $oProwl->push($oMsg);
+								// Twitter disallow duplicate tweets within an unspecified and variable time per account
+								// so add the feed time to make each tweet unique.
+								$message = $message.' at '.date("H:i:s", $feedtime);;
 
-                		if ($oResponse->isError()) {
-                            	error_log("Prowl error:".$oResponse->getErrorAsString());
-                        }
+								// Set the OAauth values
+								$settings = array(
+									'oauth_access_token' => $twitter['usertoken'],
+									'oauth_access_token_secret' => $twitter['usersecret'],
+									'consumer_key' => $twitter['consumerkey'],
+									'consumer_secret' => $twitter['consumersecret']
+								);
 
-                        break;
-                    case 5:
-                        // NMA
-                        require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
+								// Make the API call
+								$url = 'https://api.twitter.com/1.1/statuses/update.json';
+								$requestMethod = 'POST';
+								$postfields = array(
+									'status' => $message );
+								$tweet = new TwitterAPIExchange($settings);
+								echo $tweet->buildOauth($url, $requestMethod)
+											 ->setPostfields($postfields)
+											 ->performRequest();
+								break;
+							case 4:
+								// Prowl
+								require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlConnector.class.php';
+								require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlMessage.class.php';
+								require_once realpath(dirname(__FILE__)).'/scripts/prowlphp/ProwlResponse.class.php';
+								$prowl = $this->get_user_prowl($userid);
 
-                        $nmakey = $this->get_user_nma($userid);
+								$oProwl = new ProwlConnector();
+								$oMsg 	= new ProwlMessage();
 
-                        $nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
+								$oProwl->setIsPostRequest(true);
+								$oMsg->setPriority($row['priority']);
 
-                        $priority = $row['priority'];
+								$oMsg->addApiKey($prowl['prowlkey']);
 
-                        if($nma->verify()){
-                            $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
-                        }
-						
-                        break;
-						
-					case 6:
-                        // Twilio
-                        require_once realpath(dirname(__FILE__)).'/scripts/twilio/Services/Twilio.php';
+								$oMsg->setEvent($message);
 
-                        $twiliokeys = $this->get_user_twilio($userid);
 
-						$sid	 = 	$twiliokeys['sid']; // Your Account SID from www.twilio.com/user/account
-						$token	 =	$twiliokeys['token']; // Your Auth Token from www.twilio.com/user/account
-						$From	 = 	$row['fromNumber']; // From a valid Twilio number
-						$To		 =	$row['toNumber']; // Text this number
-						
-						$client = new Services_Twilio($sid, $token);
-						$messageTwilio = $client->account->messages->sendMessage(
-							$From,
-							$To,
-							$message
-							);
-                        break;
-                }
-            // update the lasttime called
-            if(!$test){
-                $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
-            }
-            }
-        }
-    }
+								// These are optional:
+								$message = 'event at '.date("Y-m-d H:i:s",time());
+								$oMsg->setDescription($message);
+								$oMsg->setApplication('emoncms');
+
+								$oResponse = $oProwl->push($oMsg);
+
+								if ($oResponse->isError()) {
+										error_log("Prowl error:".$oResponse->getErrorAsString());
+								}
+
+								break;
+							case 5:
+								// NMA
+								require_once realpath(dirname(__FILE__)).'/scripts/nma/nmaApi.class.php';
+
+								$nmakey = $this->get_user_nma($userid);
+
+								$nma = new nmaApi(array('apikey' => $nmakey['nmakey']));
+
+								$priority = $row['priority'];
+
+								if($nma->verify()){
+									$nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
+								}
+								
+								break;
+								
+							case 6:
+								// Twilio
+								require_once realpath(dirname(__FILE__)).'/scripts/twilio/Services/Twilio.php';
+
+								$twiliokeys = $this->get_user_twilio($userid);
+
+								$sid	 = 	$twiliokeys['sid']; // Your Account SID from www.twilio.com/user/account
+								$token	 =	$twiliokeys['token']; // Your Auth Token from www.twilio.com/user/account
+								$From	 = 	$row['fromNumber']; // From a valid Twilio number
+								$To		 =	$row['toNumber']; // Text this number
+								
+								$client = new Services_Twilio($sid, $token);
+								$messageTwilio = $client->account->messages->sendMessage(
+									$From,
+									$To,
+									$message
+									);
+								break;
+						}
+				// update the lasttime called
+				if(!$test){
+					$this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+				}
+				}else 
+					{
+					echo "mute time active?". "<br>" ."firsttime=" . date("Y-m-d h:i:sa",$row['firsttime']) . "<br>premute = ". $row['premute'];
+					echo "<br />time remaining:" . (($row['firsttime'] + $row['premute'])-time())."  ";
+					}
+			}else {
+				$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
+				 $this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
+				 echo "Sendalarm == 0, setting time & 1stoccurenceFlag = 0";
+				 }
+		}
+	}
 }
 
