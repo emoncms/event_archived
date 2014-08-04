@@ -29,35 +29,24 @@ class Event
      $this->mysqli->query(UPDATE table SET field = '$value' WHERE `field` = '$value');
 
     */
-<<<<<<< HEAD
 	
 	//Added XaroRSA
 	public function set_firsttime($userid,$id,$time)
     {
       $this->mysqli->query("UPDATE event SET `firsttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
     }
-	////////////////////////////////////////////////
-	
-=======
 
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
     public function set_lasttime($userid,$id,$time)
     {
       $this->mysqli->query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
     }
 
-<<<<<<< HEAD
     public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,
 						   $premute)
     {
       $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', 
 										  setvalue = $setvalue,   callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', fromNumber = '$fromNumber', toNumber = '$toNumber',  
 										  premute = '$premute'  WHERE `userid` = '$userid' AND `id` = '$id' ";
-=======
-    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
-    {
-      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message' WHERE `userid` = '$userid' AND `id` = '$id' ";
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -65,7 +54,6 @@ class Event
       }
     }
 
-<<<<<<< HEAD
     public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,$premute)
     {
       $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, 
@@ -73,11 +61,6 @@ class Event
 								  VALUES 
 								('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority',
 								 '$message','0', '$fromNumber', '$toNumber' , '0' ,'$premute' , '0')";
-=======
-    public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
-    {
-      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -103,11 +86,7 @@ class Event
 
 
     // Set all event settings in one save
-<<<<<<< HEAD
     public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$sid,$token)
-=======
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -118,13 +97,10 @@ class Event
       }
       else
       {
-<<<<<<< HEAD
         $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey', sid = '$sid', token = '$token' WHERE userid='$userid'");
-=======
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
       }
     }
+	
     public function set_status($userid, $id, $status)
     {
       $this->mysqli->query("UPDATE event SET disabled = '$status' WHERE userid='$userid' and id = $id");
@@ -159,7 +135,6 @@ class Event
       $row = $result->fetch_array();
       return $row;
     }
-<<<<<<< HEAD
 	
 	//Added XaroRSA
 	public function get_user_twilio($userid) {
@@ -167,8 +142,7 @@ class Event
       $row = $result->fetch_array();
       return $row;
     }
-=======
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
+
 
     public function test($userid,$id,$feedid)
     {
@@ -182,7 +156,6 @@ class Event
         }
 
     }
-
 
     public function check_feed_event($feedid,$updatetime,$feedtime,$value,$row=NULL,$test=false) {
 
@@ -202,12 +175,10 @@ class Event
         while ($row = $result->fetch_array()) {
 
             if ($row['lasttime']+$row['mutetime'] > time() && !$test) {
-<<<<<<< HEAD
 				echo "post-mute active";
-=======
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
                 continue;
             }
+			
             if ($test){
                $sendAlert = 1;
             }else{
@@ -458,7 +429,6 @@ class Event
                         if($nma->verify()){
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }
-<<<<<<< HEAD
 						
                         break;
 						
@@ -479,22 +449,12 @@ class Event
 							$To,
 							$message
 							);
-							
-=======
-
-
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
                         break;
                 }
             // update the lasttime called
             if(!$test){
                 $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
             }
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 186539af82a78e6cff844365618443bc1d95bec9
             }
         }
     }
