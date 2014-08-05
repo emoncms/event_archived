@@ -38,5 +38,6 @@ $schema['event'] = array(
   'firsttime' => array('type' => 'int(11)'),
   'premute' => array('type' => 'int(11)'),
   'firstoccurence' => array('type' => 'int(11)'),
+  'alarmstatus' => array('type' => 'int(11)'),
 );
 

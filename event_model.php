@@ -265,6 +265,10 @@ class Event
 
             // event type
             if ($sendAlert == 1) {
+				
+				$this->mysqli->query("UPDATE event SET alarmstatus = '"$sendAlert"' WHERE id='".$row['id']."'");
+				
+				
 				if ($row['firstoccurence'] == 0){
 						//save time to firstTime, set firstoccurance to 1
 						$this->mysqli->query("UPDATE event SET firsttime = '".time()."' WHERE id='".$row['id']."'");
@@ -473,9 +477,10 @@ class Event
 					echo "<br />time remaining:" . (($row['firsttime'] + $row['premute'])-time())."  ";
 					}
 			}else {
+				$this->mysqli->query("UPDATE event SET alarmstatus = '"$sendAlert"' WHERE id='".$row['id']."'");
 				$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
-				 $this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
-				 echo "Sendalarm == 0, setting time & 1stoccurenceFlag = 0";
+				$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
+				echo "Sendalarm == 0, setting time & 1stoccurenceFlag = 0";
 				 }
 		}
 	}
