@@ -176,6 +176,7 @@ class Event
 
             if ($row['lasttime']+$row['mutetime'] > time() && !$test) {
 				echo "post-mute active";
+				echo "\ntime remaining:" . (($row['lasttime'] + $row['mutetime'])-time())."  ";
                 continue;
             }
 			
@@ -264,22 +265,18 @@ class Event
             }
 
             // event type
-            if ($sendAlert == 1) {
-				
-				$this->mysqli->query("UPDATE event SET alarmstatus = '"$sendAlert"' WHERE id='".$row['id']."'");
-				
+            if ($sendAlert == 1) {			
 				
 				if ($row['firstoccurence'] == 0){
 						//save time to firstTime, set firstoccurance to 1
 						$this->mysqli->query("UPDATE event SET firsttime = '".time()."' WHERE id='".$row['id']."'");
 						$this->mysqli->query("UPDATE event SET firstoccurence = '1' WHERE id='".$row['id']."'");
-						echo "First occurrence set / First Time updated<br>";
-					}
-				
+						echo "First occurrence set = 1\nFirst Time updated<br>";
+				}
 				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() ){
-					$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
-					$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
-					echo "Sending message set First occurrence and Firsttime to 0<br>";
+					//$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
+					//$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
+					echo "Sending message\n";
 			
 						switch($row['action']) {
 							case 0:
@@ -467,22 +464,22 @@ class Event
 									);
 								break;
 						}
-				// update the lasttime called
-				if(!$test){
-					$this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
-				}
+					// update the lasttime called
+					if(!$test){
+						$this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+						echo "\nUpdating Last Time value\n";
+					}
+				
 				}else 
 					{
-					echo "mute time active?". "<br>" ."firsttime=" . date("Y-m-d h:i:sa",$row['firsttime']) . "<br>premute = ". $row['premute'];
-					echo "<br />time remaining:" . (($row['firsttime'] + $row['premute'])-time())."  ";
+					echo "Active Alarm\nPre-mute time active\nFirst time=" . date("Y-m-d h:i:sa",$row['firsttime']) . "\npremute = ". $row['premute'];
+					echo "\ntime remaining:" . (($row['firsttime'] + $row['premute'])-time())."  ";
 					}
 			}else {
-				$this->mysqli->query("UPDATE event SET alarmstatus = '"$sendAlert"' WHERE id='".$row['id']."'");
 				$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
 				$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
-				echo "Sendalarm == 0, setting time & 1stoccurenceFlag = 0";
-				 }
+				echo "Set Alarm Status = 0\nSet First Occurrence = 0\nSet First Time value =0\nNo active triggers\n";
+			}
 		}
 	}
 }
-
