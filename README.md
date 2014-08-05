@@ -1,20 +1,16 @@
-event
-=====
+XaroRSA Event Module additions:
 
-Setup actions to occur when a feed goes above, below or is equal a set value. Set another feed or send an email.
+Twilio SMS function
+Pre-Mute function
 
-Prowl, NMA, Curl, Twitter and Email methods native to application.
+Twilio:
+	How to use:
+		1: Sign up for Twilio trail or full account at www.Twilio.com
+		2: Enter ACCOUNT SID and AUTH TOKEN into event Settings.
+		3: Look under Numbers tab in Twilio account page. They allocate a number to use. Enter number into "FromNumber" when creating new event in format of +12345124124(This works, not sure about brackets and dashes)
+		4: On trail Twilio accounts, number you want to send to must be verified. Do this via Twilio page.
+		5: Once number is verified, enter number into "ToNumber" tab when creating new event.
 
-Email currently is biased towards gmail SMTP server.
-
-Requirements
-
-Run the next command at your (linux) shell to ensure that PHP5 scripts can run:
-`sudo apt-get install php5-mcrypt php5-curl`
-
-NMA - Notify my android
-
-NMA is a message API for sending the events to your android phone or tablet.
-You need to register at: https://www.notifymyandroid.com/ and make an API key.
-Second you have to enter the API key at the event settings (at emoncms).
-Beware that you have a treshold of only 5 messages a day with a trial account!
+Pre-mute:
+	Set a pre-mute time before sending notification. After pre-mute time is reached, regular post-mute function runs eg. 15seconds pre-mute, after 15seconds, every 30seconds post-mute if alarm remains active.
+	Note: only works when values are continuously posted. Will not automatic "check" after time-outs are reached. 	
