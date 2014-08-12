@@ -458,12 +458,18 @@ class Event
 								
 								$client = new Services_Twilio($sid, $token);
 								
+								// Allows multiple recipients for the Twilio Sms. Seperate by semi-colon ;
+								if (strpos($To,';') !== false) {
+									$ToNumberArray = explode(';', $To);
+									foreach ($ToNumberArray as &$singleToNumbers) {
+										$messageTwilio = $client->account->messages->sendMessage($From,$singleToNumbers,$message);
+									}
+								}
+								else {
+									$messageTwilio = $client->account->messages->sendMessage($From,$To,$message);
+								}
 								
-								$messageTwilio = $client->account->messages->sendMessage(
-									$From,
-									$To,
-									$message
-									);
+								
 								break;
 						}
 					// update the lasttime called
