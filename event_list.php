@@ -88,7 +88,17 @@
 	
 	<!added XaroRSA>
 	<td><?php if ($item['action']==6) echo $item['fromNumber']; ?></td>
-	<td><?php if ($item['action']==6) echo $item['toNumber']."\n"; ?></td>
+	
+	<td><?php if ($item['action']==6) {
+		if (strpos($item['toNumber'],';') !== false) {
+			$ToNumberArray = explode(';', $item['toNumber']);
+			foreach ($ToNumberArray as &$singleToNumbers) {
+				echo $singleToNumbers."</br>";
+				}
+			}
+	else echo $item['toNumber'] ; 
+	}
+	?></td>
 	
     <td><?php echo $item['message']; ?> </td>
 	
