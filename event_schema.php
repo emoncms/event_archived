@@ -33,8 +33,8 @@ $schema['event'] = array(
   'priority' => array('type' => 'int(3)', 'default'=>0),
   'message' => array('type' => 'text'),
   'disabled' => array('type' => 'int(1)'),
-  'fromNumber' => array('type' => 'varchar(15)'),
-  'toNumber' => array('type' => 'varchar(15)'), //Varchar? Text? ??
+  'fromNumber' => array('type' => 'text'),
+  'toNumber' => array('type' => 'text'), //Varchar? Text? ??
   'firsttime' => array('type' => 'int(11)'),
   'premute' => array('type' => 'int(11)'),
   'firstoccurence' => array('type' => 'int(11)'),
