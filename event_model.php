@@ -170,7 +170,7 @@ class Event
         }
 
         $result = $this->mysqli->query($sqlFeed);
-
+		
         // check type
         while ($row = $result->fetch_array()) {
 
@@ -267,16 +267,15 @@ class Event
             // event type
             if ($sendAlert == 1) {			
 				
-				if ($row['firstoccurence'] == 0){
+				if ($row['firstoccurence'] == 0 && !$test){
 						//save time to firstTime, set firstoccurance to 1
 						$this->mysqli->query("UPDATE event SET firsttime = '".time()."' WHERE id='".$row['id']."'");
 						$this->mysqli->query("UPDATE event SET firstoccurence = '1' WHERE id='".$row['id']."'");
 						echo "First occurrence set = 1\nFirst Time updated<br>";
 				}
-				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() ){
-					//$this->mysqli->query("UPDATE event SET firstoccurence = '0' WHERE id='".$row['id']."'");
-					//$this->mysqli->query("UPDATE event SET firsttime = '0' WHERE id='".$row['id']."'");
-					echo "Sending message\n";
+				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() || $test){
+
+					echo "Sending notifications!\n";
 			
 						switch($row['action']) {
 							case 0:
