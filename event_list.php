@@ -21,6 +21,7 @@
 <h2>Event</h2>
 
 <p>Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.</p>
+<p>Add multiple reciepts for email and sms(Twilio) by seperating with ; example: John@hotmail.com;Doe@gmail.com || 2712341234;98769873.</p>
 
 <?php if (!$event_list) { ?>
 	<div class="alert alert-block">
