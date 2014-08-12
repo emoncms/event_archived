@@ -67,8 +67,9 @@
     if ($item['action']!= 1)
     {
 		if ($item['premute']!=0){ 
-	  echo "<span class='label label-info' >First time: ".date("Y-n-j H:i:s", $item['firsttime'])."</span>";}
-      echo "<span class='label label-info' >Last true: ".date("Y-n-j H:i:s", $item['lasttime'])."</span>";
+			echo "<span class='label label-info' >First time: ".date("Y-n-j H:i:s", $item['firsttime'])."</span>";}
+			
+		echo "<span class='label label-info' >Last true: ".date("Y-n-j H:i:s", $item['lasttime'])."</span>";
     }
     ?></td>
 
