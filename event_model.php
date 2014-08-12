@@ -292,7 +292,7 @@ class Event
 																		   // 2 = messages only
 								$mail->SMTPAuth   = true;                  // enable SMTP authentication
 								if ($smtp['smtpport'] == 465) 
-						{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
+									{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
 
 								$mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
 								$mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
@@ -451,12 +451,14 @@ class Event
 
 								$twiliokeys = $this->get_user_twilio($userid);
 
-								$sid	 = 	$twiliokeys['sid']; // Your Account SID from www.twilio.com/user/account
-								$token	 =	$twiliokeys['token']; // Your Auth Token from www.twilio.com/user/account
-								$From	 = 	$row['fromNumber']; // From a valid Twilio number
-								$To		 =	$row['toNumber']; // Text this number
+								$sid	 = 	$twiliokeys['sid']; 	// Your Account SID from www.twilio.com/user/account
+								$token	 =	$twiliokeys['token']; 	// Your Auth Token from www.twilio.com/user/account
+								$From	 = 	$row['fromNumber']; 	// From a valid Twilio number
+								$To		 =	$row['toNumber']; 		// Text this number
 								
 								$client = new Services_Twilio($sid, $token);
+								
+								
 								$messageTwilio = $client->account->messages->sendMessage(
 									$From,
 									$To,
