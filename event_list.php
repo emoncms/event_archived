@@ -88,7 +88,7 @@
 	
 	<!added XaroRSA>
 	<td><?php if ($item['action']==6) echo $item['fromNumber']; ?></td>
-	<td><?php if ($item['action']==6) echo $item['toNumber']; ?></td>
+	<td><?php if ($item['action']==6) echo $item['toNumber']."\n"; ?></td>
 	
     <td><?php echo $item['message']; ?> </td>
 	
