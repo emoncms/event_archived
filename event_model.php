@@ -266,14 +266,14 @@ class Event
 
             // event type
             if ($sendAlert == 1) {			
-				
-				if ($row['firstoccurence'] == 0 && !$test){
+	
+				if ($row['firstoccurence'] == 0 && !$test && $row['premute']!=0){
 						//save time to firstTime, set firstoccurance to 1
 						$this->mysqli->query("UPDATE event SET firsttime = '".time()."' WHERE id='".$row['id']."'");
 						$this->mysqli->query("UPDATE event SET firstoccurence = '1' WHERE id='".$row['id']."'");
-						echo "First occurrence set = 1\nFirst Time updated<br>";
+						echo "First occurrence set = 1\nFirst Time updated\n";
 				}
-				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() || $test){
+				else if ($row['firstoccurence'] == 1 && $row['firsttime'] + $row['premute'] < Time() || $test || $row['premute']==0){
 
 					echo "Sending notifications!\n";
 			
