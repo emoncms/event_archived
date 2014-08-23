@@ -6,7 +6,7 @@
 <form action="savesettings" method="post">
 
 <div class="row-fluid">
-  <div class="span4">
+  <div class="span3">
 
     <h3><?php echo _('Email settings'); ?></h3>
     
@@ -28,13 +28,14 @@
 
     <select name="smtpport">
         <option <?php if ($settings['smtpport'] == '25') { echo "selected"; }?>  value="25">25 (No SSL)</option>
+		<option <?php if ($settings['smtpport'] == '26') { echo "selected"; }?>  value="26">26 (No SSL)</option>
         <option <?php if ($settings['smtpport'] == '465') { echo "selected"; }?> value="465">465 (SSL)</option>    
     </select>
     <br>
 
   </div>
 
-  <div class="span4">
+  <div class="span3">
 
     <h3><?php echo _('Twitter settings'); ?></h3>
     <label><?php echo _('Consumer key:'); ?></label>
@@ -48,21 +49,32 @@
     <br>
     
   </div>
-  <div class="span4">
+
+  <div class="span3">
 
     <h3><?php echo _('Prowl settings'); ?></h3>
     <label><?php echo _('Prowl key:'); ?></label>
     <input type="text" name="prowlkey" value="<?php echo $settings['prowlkey']; ?>" />
     <br>
-
   </div>
+  
   <div class="span4">
 
     <h3><?php echo _('NMA settings'); ?></h3>
     <label><?php echo _('NMA key:'); ?></label>
     <input type="text" name="nmakey" value="<?php echo $settings['nmakey']; ?>" />
     <br>
+  </div>
 
+  <div class="span3">
+  <h3><?php echo _('Twilio settings'); ?></h3>
+    <label><?php echo _('SID:'); ?></label>
+    <input type="text" name="sid" value="<?php echo $settings['sid']; ?>" />
+    <br>
+    
+	<label><?php echo _('Token:'); ?></label>
+    <input type="text" name="token" value="<?php echo $settings['token']; ?>" />
+    <br>
   </div>
 
 </div>

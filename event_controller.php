@@ -38,9 +38,16 @@
       $priority = get('priority');
       $message = get('message');
 
-      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+	  //Twilio added XaroRSA
+	  $fromNumber = get('fromNumber');
+	  $toNumber = get('toNumber');
+	  $premute = get('premute');
+	  
+      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,$premute);
+
       $result = "Event added";
     }
+	
     if ($route->action == 'edit' && $session['write'])
     {
       $eventid = intval(get('eventid'));
@@ -55,8 +62,13 @@
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
+	  
+	  //Twilio added XaroRSA
+	  $fromNumber = get('fromNumber');
+	  $toNumber = get('toNumber');
+	  $premute = get('premute');
 
-      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$fromNumber,$toNumber,$premute);
       $result = "Event updated";
     }
 
@@ -111,8 +123,12 @@
       $consumersecret = post('consumersecret');
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
+	  
+	  //Added XaroRSA
+	  $sid = post('sid');
+	  $token = post('token');
 
-      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey);
+      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey, $sid, $token);
     }
 
     else if ($session['write'])

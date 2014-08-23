@@ -1,5 +1,6 @@
 <?php
   /*
+  ssh test
    All Emoncms code is released under the GNU Affero General Public License.
    See COPYRIGHT.txt and LICENSE.txt.
 
@@ -21,65 +22,66 @@
 <h2>Event</h2>
 
 <p>Setup actions to occur when a feed goes above, below or is equal to a specified value, or becomes inactive. Send an email or set another feed to a specified value.</p>
+<p>Add multiple reciepts for email and sms(Twilio) by seperating with ; example: John@hotmail.com;Doe@gmail.com || 2712341234;98769873.</p>
 
 <?php if (!$event_list) { ?>
-<div class="alert alert-block">
-<h4 class="alert-heading">No event notifications created</h4>
-<p>To add an event based notification:</p>
-<p>1) Select the feed you wish to be notified about from the drop down menu</p>
-<p>2) Select whether you want to be notifed if the feed goes above, below or equals the value specified, or is inactive.</p>
-<p>3) Enter a value</p>
-</div>
+	<div class="alert alert-block">
+		<h4 class="alert-heading">No event notifications created</h4>
+			<p>To add an event based notification:</p>
+			<p>1) Select the feed you wish to be notified about from the drop down menu</p>
+			<p>2) Select whether you want to be notifed if the feed goes above, below or equals the value specified, or is inactive.</p>
+			<p>3) Enter a value</p>
+	</div>
 <?php } else { ?>
 <table class="table table-hover" style="">
-
+	
   <?php $i=0; foreach ($event_list as $item) { $i++; ?>
   <tr class="d<?php echo ($i & 1); ?>" >
     <td><i>if</i></td>
     <td><b><?php echo $feed->get_field($item['eventfeed'],'name'); ?></b></td>
 
-    <td>
-    <?php
-    if ($item['eventtype']==0) echo ">";
-    if ($item['eventtype']==1) echo "<";
-    if ($item['eventtype']==2) echo "==";
-    if ($item['eventtype']==3) echo "inactive";
-    if ($item['eventtype']==4) echo "updated";
-    if ($item['eventtype']==5) echo "inc by";
-    if ($item['eventtype']==6) echo "dec by";
-    if ($item['eventtype']==7) echo "manual update";
+    <td><?php
+		if ($item['eventtype']==0) echo ">";
+		if ($item['eventtype']==1) echo "<";
+		if ($item['eventtype']==2) echo "==";
+		if ($item['eventtype']==3) echo "inactive";
+		if ($item['eventtype']==4) echo "updated";
+		if ($item['eventtype']==5) echo "inc by";
+		if ($item['eventtype']==6) echo "dec by";
+		if ($item['eventtype']==7) echo "manual update";
     ?></td>
+	
     <td><?php echo $item['eventvalue']; ?></td>
-    <td>
-    <?php
+    
+	<td><?php
     $state = false;
-    if ($item['eventtype']==0 && ($feed->get_field($item['eventfeed'],'value')>$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==1 && ($feed->get_field($item['eventfeed'],'value')<$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==2 && ($feed->get_field($item['eventfeed'],'value')==$item['eventvalue'])) $state = true;
-    if ($item['eventtype']==3 && (((time()-strtotime($feed->get_field($item['eventfeed'],'time')))/3600)>24)) $state = true;
-    // Perhaps a n/a state?
-    //if ($item['eventtype']==4) $state = false;
-    if ($state == true) echo '<span class="label label-success" >TRUE</span>'; else echo '<span class="label label-important" >FALSE</span>';
-    ?>
-    </td>
-    <td>
-    <?php
+		if ($item['eventtype']==0 && ($feed->get_field($item['eventfeed'],'value')>$item['eventvalue'])) $state = true;
+		if ($item['eventtype']==1 && ($feed->get_field($item['eventfeed'],'value')<$item['eventvalue'])) $state = true;
+		if ($item['eventtype']==2 && ($feed->get_field($item['eventfeed'],'value')==$item['eventvalue'])) $state = true;
+		if ($item['eventtype']==3 && (((time()-strtotime($feed->get_field($item['eventfeed'],'time')))/3600)>24)) $state = true;
+		// Perhaps a n/a state?
+		//if ($item['eventtype']==4) $state = false;
+		if ($state == true) echo '<span class="label label-success" >TRUE</span>'; else echo '<span class="label label-important" >FALSE</span>';
+    ?></td>
+    
+	<td><?php
     if ($item['action']!= 1)
     {
-      echo "<span class='label label-info' >Last true: ".date("Y-n-j H:i:s", $item['lasttime'])."</span>";
+		if ($item['premute']!=0){ 
+			echo "<span class='label label-info' >First time: ".date("Y-n-j H:i:s", $item['firsttime'])."</span>";}
+			
+		echo "<span class='label label-info' >Last true: ".date("Y-n-j H:i:s", $item['lasttime'])."</span>";
     }
-    ?>
-    </td>
+    ?></td>
 
-    <td>
-
-    <?php
-    if ($item['action']==0) echo "email";
-    if ($item['action']==1) echo "feed";
-    if ($item['action']==2) echo "curl";
-    if ($item['action']==3) echo "tweet";
-    if ($item['action']==4) echo "prowl";
-    if ($item['action']==5) echo "nma";
+    <td><?php
+		if ($item['action']==0) echo "email";
+		if ($item['action']==1) echo "feed";
+		if ($item['action']==2) echo "curl";
+		if ($item['action']==3) echo "tweet";
+		if ($item['action']==4) echo "prowl";
+		if ($item['action']==5) echo "nma";
+		if ($item['action']==6) echo "sms";
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
@@ -87,8 +89,29 @@
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
+	
+	<!added XaroRSA>
+	
+	<td><?php if ($item['action']==0) echo $item['setemail']; ?></td>
+	
+	<td><?php if ($item['action']==6) echo $item['fromNumber']; ?></td>
+	
+	<td><?php if ($item['action']==6) {
+		if (strpos($item['toNumber'],';') !== false) {
+			$ToNumberArray = explode(';', $item['toNumber']);
+			foreach ($ToNumberArray as &$singleToNumbers) {
+				echo $singleToNumbers."</br>";
+				}
+			}
+	else echo $item['toNumber'] ; 
+	}
+	?></td>
+	
     <td><?php echo $item['message']; ?> </td>
+	
+	<td><?php echo $item['premute']; ?> secs</td>
     <td><?php echo $item['mutetime']; ?> secs</td>
+	
    <td><div class="editevent btn"
             eventid="<?php echo $item['id']; ?>"
             eventtype="<?php echo $item['eventtype']; ?>"
@@ -101,6 +124,9 @@
             callcurl="<?php echo $item['callcurl']; ?>"
             message="<?php echo $item['message']; ?>"
             mutetime="<?php echo $item['mutetime']; ?>"
+			premute="<?php echo $item['premute']; ?>"
+			fromNumber="<?php echo $item['fromNumber']; ?>"
+			toNumber="<?php echo $item['toNumber']; ?>"
 
         >Edit</div></td>
 
@@ -134,7 +160,8 @@
       <?php } ?>
       </select>
       <span style="font-weight:bold;" >is</span>
-      <select id="eventtype" name="eventtype" style="width:100px; margin:0px;">
+      <select id="eventtype" name="eventtype" style="width:150px; margin:0px;">
+
           <option value="0" >more than</option>
           <option value="5" >increases by</option>
           <option value="1" >less than</option>
@@ -151,13 +178,14 @@
 
       <span style="font-weight:bold;" >: </span>
 
-      <select id="action" name="action" style="width:100px; margin:0px;">
+      <select id="action" name="action" style="width:150px; margin:0px;">
           <option value="0" >send email</option>
           <option value="1" >set feed</option>
           <option value="2" >call url</option>
           <option value="3" >tweet</option>
           <option value="4" >send prowl</option>
           <option value="5" >send nma</option>
+		  <option value="6" >send sms</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -181,7 +209,7 @@
       </span>
 
       <span id="not-priority" style="font-weight:bold;" > priority
-          <select id="action-priority" name="priority" style="width:100px; margin:0px;">
+          <select id="action-priority" name="priority" style="width:150px; margin:0px;">
               <option value="-2">Very Low</option>
               <option value="-1">Moderate</option>
               <option value="0">Normal</option>
@@ -195,23 +223,89 @@
           <input id="callcurl" name="callcurl" type="text" style="width:400px; margin:0px;" />
       </span>
 
-      <select id="mutetime" name="mutetime" style="width:100px; margin:0px;">
-          <option value="0">No mute</option>
+	<! Added XaroRSA>
+	<span id="not-premute" style="font-weight:bold;" > Pre-Mute
+	  <select id="premute" name="premute" style="width:150px; margin:0px;">
+          <option value="0">No pre-mute</option>
           <option value="5">5 secs</option>
           <option value="15">15 secs</option>
           <option value="30">30 secs</option>
           <option value="60">1 min</option>
           <option value="300">5 min</option>
           <option value="600">10 min</option>
+		  <option value="900">15 min</option>
+		  <option value="1200">20 min</option>
+		  <option value="1500">25 min</option>
           <option value="1800">30 min</option>
-          <option value="3600">1 hour</option>
-          <option value="14400">3 hour</option>
+		  <option value="2100">35 min</option>
+		  <option value="2400">40 min</option>
+		  <option value="2700">45 min</option>
+		  <option value="3000">50 min</option>
+		  <option value="3300">55 min</option>
+		  <option value="3600">1 hour</option>
+          <option value="4200">1 hour 10mins</option>
+		  <option value="4800">1 hour 20mins</option>
+		  <option value="5400">1 hour 30mins</option>
+		  <option value="6000">1 hour 40mins</option>
+		  <option value="6600">1 hour 50mins</option>
+		  <option value="7200">2 hour</option>
+		  <option value="7800">2 hour 10mins</option>
+		  <option value="8400">2 hour 20mins</option>
+		  <option value="9000">2 hour 30mins</option>
+		  <option value="9600">2 hour 40mins</option>
+		  <option value="10200">2 hour 50mins</option>
+		  <option value="10800">3 hour</option>
+          <option value="14400">4 hour</option>
           <option value="28800">6 hour</option>
           <option value="57600">12 hour</option>
           <option value="86400">24 hour</option>
       </select>
-
-      <div id="addevent" class="btn btn-info" >Add</div>
+	</span>
+	
+	  <span id="not-postmute" style="font-weight:bold;" > Post-Mute
+		  <select id="mutetime" name="mutetime" style="width:150px; margin:0px;">
+			  <option value="0">No post-mute</option>
+<option value="5">5 secs</option>
+          <option value="15">15 secs</option>
+          <option value="30">30 secs</option>
+          <option value="60">1 min</option>
+          <option value="300">5 min</option>
+          <option value="600">10 min</option>
+		  <option value="900">15 min</option>
+		  <option value="1200">20 min</option>
+		  <option value="1500">25 min</option>
+          <option value="1800">30 min</option>
+		  <option value="2100">35 min</option>
+		  <option value="2400">40 min</option>
+		  <option value="2700">45 min</option>
+		  <option value="3000">50 min</option>
+		  <option value="3300">55 min</option>
+		  <option value="3600">1 hour</option>
+          <option value="4200">1 hour 10mins</option>
+		  <option value="4800">1 hour 20mins</option>
+		  <option value="5400">1 hour 30mins</option>
+		  <option value="6000">1 hour 40mins</option>
+		  <option value="6600">1 hour 50mins</option>
+		  <option value="7200">2 hour</option>
+		  <option value="7800">2 hour 10mins</option>
+		  <option value="8400">2 hour 20mins</option>
+		  <option value="9000">2 hour 30mins</option>
+		  <option value="9600">2 hour 40mins</option>
+		  <option value="10200">2 hour 50mins</option>
+		  <option value="10800">3 hour</option>
+          <option value="14400">4 hour</option>
+          <option value="28800">6 hour</option>
+          <option value="57600">12 hour</option>
+          <option value="86400">24 hour</option>
+		  </select>
+	  </span>
+	
+	  <span id="not-twilio" style="display:none">
+          <input id="fromNumber" 	name="fromNumber" 	type="text" style="width:180px; margin:0px;" value="From Number" />
+		  <input id="toNumber" 		name="toNumber"		type="text" style="width:180px; margin:0px;" value ="To Number" />
+      </span>
+	
+      <div id="addevent" 	 class="btn btn-info" >Add</div>
       <div id="editeventbtn" class="btn btn-info" >Edit</div>
       </div>
       <div style="clear:both"></div>
@@ -273,6 +367,12 @@
     $("#action").val($(this).attr("action"));
     $("#message").val($(this).attr("message"));
     $("#mutetime").val($(this).attr("mutetime"));
+	
+	//Added XaroRSA
+	$("#premute").val($(this).attr("premute"));
+	$("#fromNumber").val($(this).attr("fromNumber"));
+    $("#toNumber").val($(this).attr("toNumber"));	
+	
     $("#eventtype").change();
     $("#action").change();
     return false;
@@ -291,13 +391,13 @@
   });
 
   $("#action").change(function() {
-    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
-    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-priority").hide();}
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-priority").hide();}
-    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
-    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
-    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
-
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();$("#not-twilio").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-priority").hide();$("#not-twilio").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-priority").hide();$("#not-twilio").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();$("#not-twilio").hide();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();$("#not-twilio").hide();}
+    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();$("#not-twilio").hide();}
+	if ($(this).val() == 6) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-twilio").show(); $("#not-priority").show();$("#not-twilio").show();}
   });
 
   jQuery(document).ready(function(){
