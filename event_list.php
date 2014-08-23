@@ -91,6 +91,9 @@
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
 	
 	<!added XaroRSA>
+	
+	<td><?php if ($item['action']==0) echo $item['setemail']; ?></td>
+	
 	<td><?php if ($item['action']==6) echo $item['fromNumber']; ?></td>
 	
 	<td><?php if ($item['action']==6) {
