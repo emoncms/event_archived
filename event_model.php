@@ -35,9 +35,9 @@ class Event
       $this->mysqli->query("UPDATE event SET `lasttime` = '$time' WHERE `userid` = '$userid' AND `id` = '$id' ");
     }
 
-    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
+    public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos)
     {
-      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message' WHERE `userid` = '$userid' AND `id` = '$id' ";
+      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', mqtttopic = '$mqtttopic', mqttqos = '$mqttqos' WHERE `userid` = '$userid' AND `id` = '$id' ";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -45,9 +45,9 @@ class Event
       }
     }
 
-    public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority)
+    public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos)
     {
-      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0')";
+      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`, `setmqtttopic`,`setmqttpayload`, `setmqttqos`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0','$mqtttopic','$mqttqos')";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -73,7 +73,7 @@ class Event
 
 
     // Set all event settings in one save
-    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey)
+    public function set_settings($userid,$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$mqttbrokerip,$mqttbrokerport,$mqttusername,$mqttpassword)
     {
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
@@ -84,7 +84,7 @@ class Event
       }
       else
       {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey' WHERE userid='$userid'");
+        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey',mqttbrokerip='$mqttbrokerip', mqttbrokerport='$mqttbrokerport', mqttusername='$mqttusername', mqttpassword='$mqttpassword' WHERE userid='$userid'");
       }
     }
     public function set_status($userid, $id, $status)
@@ -118,6 +118,12 @@ class Event
 
     public function get_user_nma($userid) {
       $result = $this->mysqli->query("SELECT nmakey FROM event_settings WHERE `userid` = '$userid'");
+      $row = $result->fetch_array();
+      return $row;
+    }
+
+    public function get_user_mqtt($userid) {
+      $result = $this->mysqli->query("SELECT mqttbrokerip, mqttbrokerport, mqttusername, mqttpassword FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
       return $row;
     }
@@ -406,16 +412,44 @@ class Event
                         if($nma->verify()){
                             $nma->notify('EmonCMS '.$message, 'EmonCMS', $message, $priority);
                         }
+                        break;
+                    case 6:
+                        // MQTT
+                        require_once realpath(dirname(__FILE__)).'/scripts/mqtt/phpMQTT.php';
 
+                        $mqttSettings = $this->get_user_mqtt($userid);
+                        $salt = $user->get_salt($userid);
 
+                        $mqtttopic = $row['mqtttopic'];
+                        $mqtttopic = str_replace('{feed}', $feedData['name'], $mqtttopic);
+                        $mqtttopic = str_replace('{value}', $value, $mqtttopic);
+                        $mqtttopic = htmlspecialchars($mqtttopic);
+
+                        $mqttqos = $row['mqttqos'];
+                        if (empty($mqttqos)) { $mqttqos = 0; }
+
+                        // setup connection
+                        $mqtt = new phpMQTT($mqttSettings['mqttbrokerip'],$mqttSettings['mqttbrokerport'], "emoncms");
+                        if(empty($mqttSettings['mqttusername'])){
+                          $mqttConnected = $mqtt->connect();
+                        }else{
+                          $mqttusername = $mqttSettings['mqttusername'];
+                          $mqttpassword = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($mqttSettings['mqttpassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+                          $mqttConnected = $mqtt->connect(false, NULL, $mqttusername, $mqttpassword);
+                        }
+                        if ($mqttConnected) {
+                          $mqtt->publish($mqtttopic,$message,$mqttqos);
+                        }else{
+                          error_log("MQTT connection failed");
+                        }
+                        $mqtt->close();
                         break;
                 }
-            // update the lasttime called
-            if(!$test){
-                $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
-            }
 
-
+                // update the lasttime called
+                if(!$test){
+                    $this->mysqli->query("UPDATE event SET lasttime = '".time()."' WHERE id='".$row['id']."'");
+                }
             }
         }
     }

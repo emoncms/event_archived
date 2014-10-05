@@ -37,8 +37,10 @@
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
+      $mqtttopic = get('mqtttopic');
+      $mqttqos = get('mqttqos');
 
-      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos);
       $result = "Event added";
     }
     if ($route->action == 'edit' && $session['write'])
@@ -55,8 +57,10 @@
       $mutetime = get('mutetime');
       $priority = get('priority');
       $message = get('message');
+      $mqtttopic = get('mqtttopic');
+      $mqttqos = get('mqttqos');
 
-      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority);
+      $event->update($userid,$eventid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos);
       $result = "Event updated";
     }
 
@@ -112,7 +116,13 @@
       $usertoken = post('usertoken');
       $usersecret = post('usersecret');
 
-      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey);
+      $mqttbrokerip = post('mqttbrokerip');
+      $mqttbrokerport = post('mqttbrokerport');
+      $mqttusername = post('mqttusername');
+      $mqttpassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('mqttpassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+
+
+      $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$mqttbrokerip,$mqttbrokerport, $mqttusername, $mqttpassword);
     }
 
     else if ($session['write'])

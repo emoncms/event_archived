@@ -80,6 +80,7 @@
     if ($item['action']==3) echo "tweet";
     if ($item['action']==4) echo "prowl";
     if ($item['action']==5) echo "nma";
+    if ($item['action']==6) echo "mqtt";
     ?></td>
 
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
@@ -87,9 +88,9 @@
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
 
     <td><?php if ($item['action']==2) echo $item['callcurl']; ?></td>
-    <td><?php echo $item['message']; ?> </td>
+    <td><?php echo $item['message']; ?></td>
     <td><?php echo $item['mutetime']; ?> secs</td>
-   <td><div class="editevent btn"
+    <td><div class="editevent btn"
             eventid="<?php echo $item['id']; ?>"
             eventtype="<?php echo $item['eventtype']; ?>"
             eventvalue="<?php echo $item['eventvalue']; ?>"
@@ -97,6 +98,8 @@
             setvalue="<?php echo $item['setvalue']; ?>"
             setemail="<?php echo $item['setemail']; ?>"
             setfeed="<?php echo $item['setfeed']; ?>"
+            mqtttopic="<?php echo $item['mqtttopic']; ?>"
+            mqttqos="<?php echo $item['mqttqos']; ?>"
             eventfeed="<?php echo $item['eventfeed']; ?>"
             callcurl="<?php echo $item['callcurl']; ?>"
             message="<?php echo $item['message']; ?>"
@@ -158,6 +161,7 @@
           <option value="3" >tweet</option>
           <option value="4" >send prowl</option>
           <option value="5" >send nma</option>
+          <option value="6" >send mqtt</option>
       </select>
 
       <span id="not-email" style="display:none">
@@ -171,15 +175,23 @@
               <?php } ?>
           </select>
       </span>
-
+      <span id="not-mqtttopic" style="display:none" >topic
+          <input id="mqtttopic" name="mqtttopic" type="text" style="width:180px; margin:0px;" value="emoncms/event/{feed}"/>
+      </span>
+      <span id="not-mqttqos" style="display:none" >qos
+          <!input id="mqttqos" name="mqttqos" type="int" style="width:60px; margin:0px;" value="0" />
+          <select id="mqttqos" name="mqttqos" style="width:50px; margin:0px;">
+            <option value="0" >0</option>
+            <option value="1" >1</option>
+            <option value="2" >2</option>
+          </select>
+      </span>
       <span id="not-value" style="font-weight:bold;" >to
           <input id="setvalue" name="setvalue" type="text" style="width:60px; margin:0px;" />
       </span>
-
       <span id="not-message" style="font-weight:bold;" > message
           <input id="message" name="message" type="text" style="width:180px; margin:0px;" value="{feed} is {value}"/>
       </span>
-
       <span id="not-priority" style="font-weight:bold;" > priority
           <select id="action-priority" name="priority" style="width:100px; margin:0px;">
               <option value="-2">Very Low</option>
@@ -270,6 +282,8 @@
     $("#setvalue").val($(this).attr("setvalue"));
     $("#setemail").val($(this).attr("setemail"));
     $("#callcurl").val($(this).attr("callcurl"));
+    $("#mqtttopic").val($(this).attr("mqtttopic"));
+    $("#mqttqos").val($(this).attr("mqttqos"));
     $("#action").val($(this).attr("action"));
     $("#message").val($(this).attr("message"));
     $("#mutetime").val($(this).attr("mutetime"));
@@ -291,13 +305,13 @@
   });
 
   $("#action").change(function() {
-    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
-    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-priority").hide();}
-    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-priority").hide();}
-    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();}
-    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
-    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();}
-
+    if ($(this).val() == 0) { $("#not-email").show(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 1) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").show(); $("#not-value").show(); $("#not-message").hide(); $("#not-priority").hide();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 2) { $("#not-email").hide(); $("#not-curl").show(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").hide(); $("#not-priority").hide();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 3) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 4) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 5) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").show();$("#not-mqtttopic").hide();$("#not-mqttqos").hide();}
+    if ($(this).val() == 6) { $("#not-email").hide(); $("#not-curl").hide(); $("#not-feed").hide(); $("#not-value").hide(); $("#not-message").show(); $("#not-priority").hide();$("#not-mqtttopic").show();$("#not-mqttqos").show();}
   });
 
   jQuery(document).ready(function(){

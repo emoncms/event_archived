@@ -65,6 +65,23 @@
 
   </div>
 
+    <div class="span4">
+    <h3><?php echo _('MQTT settings'); ?></h3>
+    <label><?php echo _('MQTT broker IP address:'); ?></label>
+    <input type="text" name="mqttbrokerip" value="<?php echo $settings['mqttbrokerip']; ?>" />
+    <label><?php echo _('MQTT broker port:'); ?></label>
+    <input type="text" name="mqttbrokerport" value="<?php echo $settings['mqttbrokerport']; ?>" />
+    <label><?php echo _('MQTT username:'); ?></label>
+    <input type="text" name="mqttusername" value="<?php echo $settings['mqttusername']; ?>" />
+    <label><?php echo _('MQTT password:'); ?></label>
+    <?php
+    $salt = $user->get_salt($session['userid']);
+    $mqttpassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($settings['mqttpassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+    ?>
+    <input type="password" name="mqttpassword" value="<?php echo $mqttpassword; ?>" />
+    <br>
+  </div>
+
 </div>
 
     <input type="submit" class="btn btn-danger" value="<?php echo _('Change'); ?>" />

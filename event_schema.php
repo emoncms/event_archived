@@ -11,7 +11,11 @@ $schema['event_settings'] = array(
   'usertoken' => array('type' => 'varchar(60)'),
   'usersecret' => array('type' => 'varchar(60)'),
   'prowlkey' => array('type' => 'varchar(60)'),
-  'nmakey' => array('type' => 'varchar(60)')
+  'nmakey' => array('type' => 'varchar(60)'),
+  'mqttbrokerip' => array('type' => 'varchar(60)'),
+  'mqttbrokerport' => array('type' => 'varchar(5)'),
+  'mqttusername' => array('type' => 'varchar(60)'),
+  'mqttpassword' => array('type' => 'varchar(60)')
 );
 
 $schema['event'] = array(
@@ -29,6 +33,8 @@ $schema['event'] = array(
   'mutetime' => array('type' => 'int(11)'),
   'priority' => array('type' => 'int(3)', 'default'=>0),
   'message' => array('type' => 'text'),
-  'disabled' => array('type' => 'int(1)')
+  'disabled' => array('type' => 'int(1)'),
+  'mqtttopic' => array('type' => 'text'),
+  'mqtttqos' => array('type' => 'int(3)', 'default'=>0)
 );
 
