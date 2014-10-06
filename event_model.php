@@ -47,7 +47,7 @@ class Event
 
     public function add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos)
     {
-      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`, `setmqtttopic`,`setmqttpayload`, `setmqttqos`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0','$mqtttopic','$mqttqos')";
+      $sql = "INSERT INTO event (`userid`,`eventfeed`, `eventtype`, `eventvalue`, `action`, `setfeed`, `setemail`, `setvalue`, `lasttime`, `callcurl`, `mutetime`, `priority`, `message`, `disabled`, `mqtttopic`, `mqttqos`) VALUES ('$userid','$eventfeed','$eventtype','$eventvalue','$action','$setfeed','$setemail','$setvalue','0','$callcurl','$mutetime','$priority','$message','0','$mqtttopic','$mqttqos')";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
