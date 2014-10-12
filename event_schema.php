@@ -35,6 +35,6 @@ $schema['event'] = array(
   'message' => array('type' => 'text'),
   'disabled' => array('type' => 'int(1)'),
   'mqtttopic' => array('type' => 'text'),
-  'mqtttqos' => array('type' => 'int(3)', 'default'=>0)
+  'mqttqos' => array('type' => 'int(3)', 'default'=>0)
 );
 
