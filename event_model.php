@@ -37,7 +37,7 @@ class Event
 
     public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos)
     {
-      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', mqtttopic = '$mqtttopic', mqttqos = '$mqttqos' WHERE `userid` = '$userid' AND `id` = '$id' ";
+      $sql = "UPDATE event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', mqtttopic = '$mqtttopic', mqttqos = '$mqttqos' WHERE `userid` = '$userid' AND `id` = '$id' ";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
