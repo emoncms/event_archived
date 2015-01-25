@@ -82,7 +82,7 @@
     if ($item['action']==5) echo "nma";
     if ($item['action']==6) echo "mqtt";
     ?></td>
-
+  	<td><?php if ($item['action']==0) echo $item['setemail']; ?></td>
     <td><?php if ($item['action']==1) echo $feed->get_field($item['setfeed'],'name'); ?></td>
     <td><i><?php if ($item['action']==1) echo "="; ?></i></td>
     <td><?php if ($item['action']==1) echo $item['setvalue']; ?></td>
@@ -316,6 +316,8 @@
 
   jQuery(document).ready(function(){
       $("#editeventbtn").hide();
+      $("#not-email").show(); // workaround to get not-email active and hence allow add to insert into the db
+	    $("#not-value").hide(); // did not know how to hide the not-value after the above workaround
 });
 
 </script>
