@@ -28,9 +28,20 @@
 
     <select name="smtpport">
         <option <?php if ($settings['smtpport'] == '25') { echo "selected"; }?>  value="25">25 (No SSL)</option>
+        <option <?php if ($settings['smtpport'] == '587') { echo "selected"; }?> value="587">587 (TSL)</option> 
         <option <?php if ($settings['smtpport'] == '465') { echo "selected"; }?> value="465">465 (SSL)</option>    
     </select>
-    <br>
+    <br><br>
+    <b><?php echo _('Note for gmail.com account:'); ?></b><br>
+    <p><?php echo _('You have to change the settings to allow less security apps and enable application to access gmail account.'); ?><br>
+
+    <?php echo _('Follow below steps:'); ?><br>
+    <?php echo _('1. login to your gmail account (same as you are using in this setting)'); ?><br>
+
+    <?php echo _('2. Go to below link and enable access to less security apps'); ?><br>
+
+    <a href="https://www.google.com/settings/security/lesssecureapps" target="_blank">https://www.google.com/settings/security/lesssecureapps</a></p>
+     
 
   </div>
 

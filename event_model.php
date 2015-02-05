@@ -37,7 +37,7 @@ class Event
 
     public function update($userid,$id,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos)
     {
-      $sql = "UPDATE    emoncms.event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', mqtttopic = '$mqtttopic', mqttqos = '$mqttqos' WHERE `userid` = '$userid' AND `id` = '$id' ";
+      $sql = "UPDATE event SET eventfeed = $eventfeed, eventtype = $eventtype, eventvalue = $eventvalue, action = $action, setfeed = $setfeed, setemail = '$setemail', setvalue = $setvalue,  callcurl = '$callcurl', mutetime = $mutetime, priority = $priority, message = '$message', mqtttopic = '$mqtttopic', mqttqos = '$mqttqos' WHERE `userid` = '$userid' AND `id` = '$id' ";
       error_log('Mysql Query: ' + $sql);
       $result = $this->mysqli->query($sql);
       if (!$result){
@@ -252,17 +252,24 @@ class Event
                     case 0:
                         // email
                         require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.phpmailer.php');
+                        require_once(realpath(dirname(__FILE__)).'/../event/scripts/phpmailer/class.smtp.php');
                         $smtp = $this->get_settings($userid);
 
                         $mail             = new PHPMailer();
 
                         $mail->IsSMTP(); // telling the class to use SMTP
-                        $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
-                                                                   // 1 = errors and messages
-                                                                   // 2 = messages only
+                        $mail->SMTPDebug  = 0;                     // SMTP debug information (for testing)
+                                                                   // 0 No output
+                                                                   // 1 Commands
+                                                                   // 2 Data and commands
+                                                                   // 3 As 2 plus connection status
+                                                                   // 4 Low-level data output
                         $mail->SMTPAuth   = true;                  // enable SMTP authentication
-                        if ($smtp['smtpport'] == 465) 
-				{$mail->SMTPSecure = "ssl";}                 // sets the prefix to the server
+                        if ($smtp['smtpport'] == 587) 
+                				  {$mail->SMTPSecure = "tls";}            // use it for gmail ssl is deprecated
+                        else if ($smtp['smtpport'] == 465) 
+				                  {$mail->SMTPSecure = "ssl";}           // sets the prefix to the server
+                        
 
                         $mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
                         $mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server

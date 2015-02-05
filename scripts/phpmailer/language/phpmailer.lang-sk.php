@@ -1,9 +1,9 @@
 <?php
 /**
-* PHPMailer language file: refer to English translation for definitive list
-* Slovak Version
-* Author: Michal Tinka <michaltinka@gmail.com>
-*/
+ * Slovak PHPMailer language file: refer to English translation for definitive list
+ * @package PHPMailer
+ * @author Michal Tinka <michaltinka@gmail.com>
+ */
 
 $PHPMAILER_LANG['authenticate']         = 'SMTP Error: Chyba autentifikácie.';
 $PHPMAILER_LANG['connect_host']         = 'SMTP Error: Nebolo možné nadviazať spojenie so SMTP serverom.';
@@ -23,4 +23,3 @@ $PHPMAILER_LANG['signing']              = 'Chyba prihlasovania: ';
 $PHPMAILER_LANG['smtp_connect_failed']  = 'SMTP Connect() zlyhalo.';
 $PHPMAILER_LANG['smtp_error']           = 'SMTP chyba serveru: ';
 $PHPMAILER_LANG['variable_set']         = 'Nemožno nastaviť alebo resetovať premennú: ';
-?>
