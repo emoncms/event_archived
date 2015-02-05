@@ -1,8 +1,9 @@
 <?php
 /**
-* PHPMailer language file: refer to English translation for definitive list
-* Russian Version by Alexey Chumakov <alex@chumakov.ru>
-*/
+ * Russian PHPMailer language file: refer to English translation for definitive list
+ * @package PHPMailer
+ * @author Alexey Chumakov <alex@chumakov.ru>
+ */
 
 $PHPMAILER_LANG['authenticate']         = 'Ошибка SMTP: ошибка авторизации.';
 $PHPMAILER_LANG['connect_host']         = 'Ошибка SMTP: не удается подключиться к серверу SMTP.';
@@ -22,5 +23,3 @@ $PHPMAILER_LANG['signing']              = 'Ошибка подписывания
 $PHPMAILER_LANG['smtp_connect_failed']  = 'Ошибка соединения с SMTP-сервером';
 $PHPMAILER_LANG['smtp_error']           = 'Ошибка SMTP-сервера: ';
 $PHPMAILER_LANG['variable_set']         = 'Невозможно установить или переустановить переменную: ';
-
-?>
