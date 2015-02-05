@@ -12,6 +12,14 @@ Requirements
 Run the next command at your (linux) shell to ensure that PHP5 scripts can run:
 `sudo apt-get install php5-mcrypt php5-curl`
 
+Then login into your EmonCMS modules home directory:
+cd /var/www/emoncms/Modules
+
+Close this git with:
+sudo git clone https://github.com/emoncms/event.git
+
+Login into your EmonCMS server and you should find Event under the new "Extras" menu.
+
 NMA - Notify my android
 
 NMA is a message API for sending the events to your android phone or tablet.
