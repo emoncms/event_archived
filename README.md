@@ -18,7 +18,9 @@ cd /var/www/emoncms/Modules
 Close this git with:
 sudo git clone https://github.com/emoncms/event.git
 
-Login into your EmonCMS server and you should find Event under the new "Extras" menu.
+Login into your EmonCMS server with admin rights and you should find Event under the new "Extras" menu.
+Go to Admin menu and update the database first to commit the new tables
+Now you can use the event module
 
 NMA - Notify my android
 
@@ -27,4 +29,5 @@ You need to register at: https://www.notifymyandroid.com/ and make an API key.
 Second you have to enter the API key at the event settings (at emoncms).
 Beware that you have a treshold of only 5 messages a day with a trial account!
 
-MQTT will require access to an MQTT broker.
+MQTT will require access to an MQTT broker. (like: http://mosquitto.org/ for a raspberry pi).
+MQTT (Telemetry Transport) is a protocol designed for sending telemetry from devices in situations where bandwidth is very limited. Because of this, is an extremely light-weight protocol, and at a mere 42 pages the protocol specification is light-weight too.
