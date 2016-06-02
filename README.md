@@ -1,6 +1,8 @@
 event
 =====
 
+## Update : Depreciated in favor of built in event processor [link](https://openenergymonitor.org/emon/node/12083)
+
 Setup actions to occur when a feed goes above, below or is equal a set value. Set another feed or send an email.
 
 Prowl, NMA, Curl, Twitter, MQTT and Email methods native to application.
