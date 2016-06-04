@@ -3,7 +3,7 @@ event
 
 ### Legacy module
 
-Development / maintenance has ceased on this module. Alternatives such as nodeREED and MQTTwarn are now available 
+Development / maintenance has ceased on this module. Alternatives such as nodeREED and MQTTwarn are now available. This module does not work with Emoncms V9.
 ***
 
 Setup actions to occur when a feed goes above, below or is equal a set value. Set another feed or send an email.
