@@ -445,7 +445,7 @@ class Event
                           $mqttConnected = $mqtt->connect();
                         }else{
                           $mqttusername = $mqttSettings['mqttusername'];
-                          $c = base64_decode($settings['mqttpassword']);
+                          $c = base64_decode($mqttSettings['mqttpassword']);
                           $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
                           $iv = substr($c, 0, $ivlen);
                           $hmac = substr($c, $ivlen, $sha2len=32);
