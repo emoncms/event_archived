@@ -43,6 +43,7 @@
       $event->add($userid,$eventfeed,$eventtype,$eventvalue,$action,$setfeed,$setemail,$setvalue,$callcurl,$message,$mutetime,$priority,$mqtttopic,$mqttqos);
       $result = "Event added";
     }
+
     if ($route->action == 'edit' && $session['write'])
     {
       $eventid = intval(get('eventid'));
@@ -64,13 +65,13 @@
       $result = "Event updated";
     }
 
-
     else if ($route->action == 'delete' && $session['write'])
     {
       $id = intval(get('id'));
       $event->delete($userid,$id);
       $result = "Event deleted";
     }
+
     else if ($route->action == 'status' && $session['write'])
     {
       $id = intval(get('id'));
@@ -108,7 +109,12 @@
       $smtpuser = post('smtpuser');
 
       $salt = $user->get_salt($session['userid']);
-      $smtppassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('smtppassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+      $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+      $iv = openssl_random_pseudo_bytes($ivlen);
+      $ciphertext_raw = openssl_encrypt(post('smtppassword'), $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv);
+      $hmac = hash_hmac('sha256', $ciphertext_raw, $salt, $as_binary=true);
+      $smtppassword = base64_encode( $iv.$hmac.$ciphertext_raw );
+      
       $smtpport = preg_replace('/[^\w\s-]/','',post('smtpport'));
 
       $consumerkey = post('consumerkey');
@@ -119,10 +125,20 @@
       $mqttbrokerip = post('mqttbrokerip');
       $mqttbrokerport = post('mqttbrokerport');
       $mqttusername = post('mqttusername');
-      $mqttpassword = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, post('mqttpassword'), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-
+      
+      $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+      $iv = openssl_random_pseudo_bytes($ivlen);
+      $ciphertext_raw = openssl_encrypt(post('mqttpassword'), $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv);
+      $hmac = hash_hmac('sha256', $ciphertext_raw, $salt, $as_binary=true);
+      $mqttpassword = base64_encode( $iv.$hmac.$ciphertext_raw );
 
       $result = $event->set_settings($session['userid'],$prowlkey,$consumerkey,$consumersecret,$usertoken,$usersecret,$smtpserver,$smtpuser,$smtppassword,$smtpport,$nmakey,$mqttbrokerip,$mqttbrokerport, $mqttusername, $mqttpassword);
+      if ($result) {
+        $result = "Event settings updated!";
+      }
+      else {
+        $result = "Error occours while updating settings!";
+      }
     }
 
     else if ($session['write'])

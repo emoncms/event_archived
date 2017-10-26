@@ -78,14 +78,13 @@ class Event
       $result = $this->mysqli->query("SELECT userid  FROM event_settings WHERE `userid` = '$userid'");
       $row = $result->fetch_array();
 
-      if (!$row)
-      {
-        $this->mysqli->query("INSERT INTO event_settings (`userid`) VALUES ('$userid')");
+      if (!$row) {
+        $result = $this->mysqli->query("INSERT INTO event_settings (`userid`) VALUES ('$userid')");
       }
-      else
-      {
-        $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey',mqttbrokerip='$mqttbrokerip', mqttbrokerport='$mqttbrokerport', mqttusername='$mqttusername', mqttpassword='$mqttpassword' WHERE userid='$userid'");
+      else {
+        $result = $this->mysqli->query("UPDATE event_settings SET prowlkey = '$prowlkey', consumerkey = '$consumerkey', consumersecret = '$consumersecret', usertoken = '$usertoken', usersecret = '$usersecret', smtpserver = '$smtpserver', smtpuser = '$smtpuser', smtppassword = '$smtppassword', smtpport = '$smtpport', nmakey = '$nmakey',mqttbrokerip='$mqttbrokerip', mqttbrokerport='$mqttbrokerport', mqttusername='$mqttusername', mqttpassword='$mqttpassword' WHERE userid='$userid'");
       }
+      return $result;
     }
     public function set_status($userid, $id, $status)
     {
@@ -274,9 +273,14 @@ class Event
                         $mail->Host       = $smtp['smtpserver'];      // sets GMAIL as the SMTP server
                         $mail->Port       = $smtp['smtpport'];         // set the SMTP port for the GMAIL server
                         $mail->Username   = $smtp['smtpuser'];       // GMAIL username
-                        $salt = $user->get_salt($userid);
 
-                        $mail->Password   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($smtp['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
+                        $salt = $user->get_salt($userid);
+                        $c = base64_decode($smtp['smtppassword']);
+                        $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+                        $iv = substr($c, 0, $ivlen);
+                        $hmac = substr($c, $ivlen, $sha2len=32);
+                        $ciphertext_raw = substr($c, $ivlen+$sha2len);
+                        $mail->Password = openssl_decrypt($ciphertext_raw, $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv); // GMAIL password
 
                         $address = $smtp['smtpuser'];
                         $mail->SetFrom($address, 'emoncms');
@@ -441,7 +445,12 @@ class Event
                           $mqttConnected = $mqtt->connect();
                         }else{
                           $mqttusername = $mqttSettings['mqttusername'];
-                          $mqttpassword = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($mqttSettings['mqttpassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+                          $c = base64_decode($settings['mqttpassword']);
+                          $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+                          $iv = substr($c, 0, $ivlen);
+                          $hmac = substr($c, $ivlen, $sha2len=32);
+                          $ciphertext_raw = substr($c, $ivlen+$sha2len);
+                          $mqttpassword = openssl_decrypt($ciphertext_raw, $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv);
                           $mqttConnected = $mqtt->connect(false, NULL, $mqttusername, $mqttpassword);
                         }
                         if ($mqttConnected) {
