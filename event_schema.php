@@ -15,7 +15,7 @@ $schema['event_settings'] = array(
   'mqttbrokerip' => array('type' => 'varchar(60)'),
   'mqttbrokerport' => array('type' => 'varchar(5)'),
   'mqttusername' => array('type' => 'varchar(60)'),
-  'mqttpassword' => array('type' => 'varchar(60)')
+  'mqttpassword' => array('type' => 'varchar(128)')
 );
 
 $schema['event'] = array(

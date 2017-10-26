@@ -21,7 +21,12 @@
     <label><?php echo _('SMTP password'); ?></label>
     <?php
     $salt = $user->get_salt($session['userid']);
-    $smtppassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($settings['smtppassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));   // GMAIL password
+    $c = base64_decode($settings['smtppassword']);
+    $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+    $iv = substr($c, 0, $ivlen);
+    $hmac = substr($c, $ivlen, $sha2len=32);
+    $ciphertext_raw = substr($c, $ivlen+$sha2len);
+    $smtppassword = openssl_decrypt($ciphertext_raw, $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv);
     ?>
     <input type="password" name="smtppassword"  value="<?php echo $smtppassword; ?>" />
     <br>    
@@ -34,14 +39,10 @@
     <br><br>
     <b><?php echo _('Note for gmail.com account:'); ?></b><br>
     <p><?php echo _('You have to change the settings to allow less security apps and enable application to access gmail account.'); ?><br>
-
     <?php echo _('Follow below steps:'); ?><br>
     <?php echo _('1. login to your gmail account (same as you are using in this setting)'); ?><br>
-
     <?php echo _('2. Go to below link and enable access to less security apps'); ?><br>
-
-    <a href="https://www.google.com/settings/security/lesssecureapps" target="_blank">https://www.google.com/settings/security/lesssecureapps</a></p>
-     
+    <a href="https://www.google.com/settings/security/lesssecureapps" target="_blank">https://www.google.com/settings/security/lesssecureapps</a></p>    
 
   </div>
 
@@ -87,7 +88,12 @@
     <label><?php echo _('MQTT password:'); ?></label>
     <?php
     $salt = $user->get_salt($session['userid']);
-    $mqttpassword   = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($settings['mqttpassword']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+    $c = base64_decode($settings['mqttpassword']);
+    $ivlen = openssl_cipher_iv_length($cipher="AES-128-CBC");
+    $iv = substr($c, 0, $ivlen);
+    $hmac = substr($c, $ivlen, $sha2len=32);
+    $ciphertext_raw = substr($c, $ivlen+$sha2len);
+    $mqttpassword = openssl_decrypt($ciphertext_raw, $cipher, $salt, $options=OPENSSL_RAW_DATA, $iv);
     ?>
     <input type="password" name="mqttpassword" value="<?php echo $mqttpassword; ?>" />
     <br>
