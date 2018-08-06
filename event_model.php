@@ -186,13 +186,10 @@ class Event
                         }
                         break;
                     case 3:
-                        // inactive
-                        // not sure this can be called as no feed updated
-                        //if (((time()-$row['lasttime'])/3600)>24) {}
+                        // inactive (in seconds)
                         $feedData = $feed->get($row['eventfeed']);
-                        //error_log("Feeddata: " .$feedData->time);
-                        $t = time()- strtotime($feedData['time']);
-                        //error_log("t: " .$t);
+                        $t = time() - $feedData['time'];
+                        // error_log("t elapsed: " . $t . " | value entered: " . $row['eventvalue']);  // Seconds without calling 
                         if ($t > $row['eventvalue']){
                            $sendAlert = 1;
                         }
